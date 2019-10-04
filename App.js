@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 
 import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
-import { apiKey } from './secrets';
+import { apiKey } from './front_secrets';
 /*
  TODO: Insert your API key below
  */
