@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { getUserId } = require('../utils')
-const { APP_SECRET } = require('../../secrets.js')
+const { APP_SECRET } = require('../../back_secrets.js')
 
 async function signup(parent, args, context, info) {
   // 1

@@ -1,6 +1,6 @@
 # The HTTP endpoint for your Prisma API
 #endpoint: ''
-endpoint: https://eu1.prisma.sh/yogis-yodelers/postIt/dev
+endpoint: https://us1.prisma.sh/yogis/postIt/dev
 
 # Points to the file that contains your datamodel
 datamodel: datamodel.prisma
