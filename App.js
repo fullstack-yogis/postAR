@@ -21,9 +21,9 @@ export default class postAR extends Component {
     this.changeUserState = this.changeUserState.bind(this);
   }
 
-  changeUserState(user) {
+  changeUserState(userId) {
     this.setState({
-      user: user,
+      user: userId,
     });
   }
 
