@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import LogInForm from './LogInForm';
+
 import { ViroARSceneNavigator } from 'react-viro';
 import { APP_SECRET } from '../front_secrets';
+
 let sharedProps = {
   apiKey: APP_SECRET,
 };
@@ -21,8 +24,6 @@ export default class LogIn extends Component {
     this.state = {
       sharedProps: sharedProps,
       loggedIn: false,
-      email: '',
-      password: '',
     };
     this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
   }
@@ -39,70 +40,14 @@ export default class LogIn extends Component {
 
   render() {
     if (this.state.loggedIn) {
-      return this.getARNavigator();
+      return (
+        <ViroARSceneNavigator
+          {...this.state.sharedProps}
+          initialScene={{ scene: InitialARScene }}
+        />
+      );
     } else {
-      return this.displayLogInForm();
+      return <LogInForm handleLoginSubmit={this.handleLoginSubmit} />;
     }
   }
-
-  getARNavigator() {
-    return (
-      <ViroARSceneNavigator
-        {...this.state.sharedProps}
-        initialScene={{ scene: InitialARScene }}
-      />
-    );
-  }
-
-  displayLogInForm() {
-    return (
-      <View style={styles.container}>
-        <Text>Login Page</Text>
-        <TextInput
-          style={styles.loginInput}
-          placeholder="Email"
-          placeholderTextColor="#6e6e6e"
-          autoCapitalize="none"
-          value={this.state.email}
-          onChangeText={email => this.setState({ email })}
-        />
-        <TextInput
-          style={styles.loginInput}
-          secureTextEntry={true}
-          placeholder="Password"
-          placeholderTextColor="#6e6e6e"
-          autoCapitalize="none"
-          value={this.state.password}
-          onChangeText={password => this.setState({ password })}
-        />
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => {
-            this.handleLoginSubmit();
-          }}
-        >
-          <Text>Log in</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loginInput: {
-    fontStyle: 'italic',
-    color: 'grey',
-    marginBottom: 10,
-    height: 40,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderColor: '#eeeeee',
-    borderWidth: 1,
-  },
-});
