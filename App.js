@@ -19,6 +19,7 @@ import {
 
 import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
 import { APP_SECRET } from './front_secrets';
+import AllPosts from './Components/AllPosts';
 
 var sharedProps = {
   apiKey: APP_SECRET,
@@ -88,6 +89,14 @@ export default class ViroSample extends Component {
             underlayColor={'#68a0ff'}
           >
             <Text style={localStyles.buttonText}>VR</Text>
+          </TouchableHighlight>
+
+          <TouchableHighlight
+            style={localStyles.buttons}
+            onPress={this._getExperienceButtonOnPress(VR_NAVIGATOR_TYPE)}
+            underlayColor={'#68a0ff'}
+          >
+            <AllPosts />
           </TouchableHighlight>
         </View>
       </View>
@@ -187,5 +196,3 @@ var localStyles = StyleSheet.create({
     borderColor: '#fff',
   },
 });
-
-module.exports = ViroSample;

@@ -14,8 +14,8 @@ class SinglePost extends Component {
     return (
       <View>
         <View>
-          {this.props.post.description} {this.props.post.name}
-          {this.props.post.comments}
+          <Text>{this.props.post.description}</Text>
+          <Text>{this.props.post.id}</Text>
         </View>
       </View>
     );
