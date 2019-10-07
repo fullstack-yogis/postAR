@@ -24,6 +24,7 @@ type Comment {
   text: String!
   post: Post!
   user: User!
+  createdAt: DateTime!
 }
 
 type CommentConnection {
@@ -71,11 +72,14 @@ enum CommentOrderByInput {
   id_DESC
   text_ASC
   text_DESC
+  createdAt_ASC
+  createdAt_DESC
 }
 
 type CommentPreviousValues {
   id: ID!
   text: String!
+  createdAt: DateTime!
 }
 
 input CommentScalarWhereInput {
@@ -107,6 +111,14 @@ input CommentScalarWhereInput {
   text_not_starts_with: String
   text_ends_with: String
   text_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
   AND: [CommentScalarWhereInput!]
   OR: [CommentScalarWhereInput!]
   NOT: [CommentScalarWhereInput!]
@@ -236,6 +248,14 @@ input CommentWhereInput {
   text_not_ends_with: String
   post: PostWhereInput
   user: UserWhereInput
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
   AND: [CommentWhereInput!]
   OR: [CommentWhereInput!]
   NOT: [CommentWhereInput!]
@@ -244,6 +264,8 @@ input CommentWhereInput {
 input CommentWhereUniqueInput {
   id: ID
 }
+
+scalar DateTime
 
 scalar Long
 
@@ -287,6 +309,7 @@ type PageInfo {
 
 type Post {
   id: ID!
+  createdAt: DateTime!
   description: String!
   privacy: Boolean!
   location: String!
@@ -343,6 +366,8 @@ type PostEdge {
 enum PostOrderByInput {
   id_ASC
   id_DESC
+  createdAt_ASC
+  createdAt_DESC
   description_ASC
   description_DESC
   privacy_ASC
@@ -353,6 +378,7 @@ enum PostOrderByInput {
 
 type PostPreviousValues {
   id: ID!
+  createdAt: DateTime!
   description: String!
   privacy: Boolean!
   location: String!
@@ -373,6 +399,14 @@ input PostScalarWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
   description: String
   description_not: String
   description_in: [String!]
@@ -515,6 +549,14 @@ input PostWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
   description: String
   description_not: String
   description_in: [String!]

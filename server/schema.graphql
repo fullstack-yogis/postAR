@@ -1,3 +1,5 @@
+scalar DateTime
+
 type Query {
   feed: [Post!]!
 }
@@ -12,6 +14,7 @@ type Mutation {
 type Post {
   id: ID!
   description: String!
+  createdAt: DateTime!
   location: String!
   privacy: Boolean!
   postedBy: User
@@ -32,7 +35,7 @@ type User {
 }
 
 type Subscription {
-  newPost: Post,
+  newPost: Post
   newComment: Comment
 }
 
@@ -41,5 +44,5 @@ type Comment {
   text: String!
   post: Post!
   user: User!
+  createdAt: DateTime!
 }
-

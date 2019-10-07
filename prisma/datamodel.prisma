@@ -1,5 +1,6 @@
 type Post {
   id: ID! @id
+  createdAt: DateTime! @createdAt
   description: String!
   privacy: Boolean!
   location: String!
@@ -21,4 +22,5 @@ type Comment {
   text: String!
   post: Post!
   user: User!
+  createdAt: DateTime! @createdAt
 }
