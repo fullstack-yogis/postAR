@@ -56,5 +56,5 @@ buck-out/
 *.jsbundle
 
 #hiding secrets files here
-back-secrets.js
-front-secrets.js
+back_secrets.js
+front_secrets.js
