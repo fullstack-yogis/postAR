@@ -1,3 +1,5 @@
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+
 import { AppRegistry } from 'react-native';
 import AppRoot from './App.js';
 import React, { Component } from 'react';

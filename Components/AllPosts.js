@@ -22,7 +22,7 @@ class AllPosts extends Component {
         <Query query={FEED_QUERY}>
           {({ loading, error, data }) => {
             if (loading) return <Text>Fetching</Text>;
-            if (error) return <Text>{error}</Text>;
+            if (error) return <Text>Error</Text>;
 
             const postsToRender = data.feed;
 
