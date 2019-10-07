@@ -1,3 +1,3 @@
-const APP_SECRET = '746F83AC-AF5C-43B8-B1BC-94197F1634B9';
+const APP_SECRET = 'LadyM';
 
-module.exports = { APP_SECRET }
+module.exports = { APP_SECRET };

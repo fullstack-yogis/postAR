@@ -18,12 +18,10 @@ import {
 } from 'react-native';
 
 import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
-import { apiKey } from './front_secrets';
-/*
- TODO: Insert your API key below
- */
+import { APP_SECRET } from './front_secrets';
+
 var sharedProps = {
-  apiKey: apiKey,
+  apiKey: APP_SECRET,
 };
 
 // Sets the default scene you want for AR and VR
