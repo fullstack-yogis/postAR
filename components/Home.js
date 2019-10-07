@@ -1,51 +1,36 @@
-import React from 'react';
-import { View, Text, TouchableHighlight, StyleSheet } from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-let LOGIN_VIEW = 'LOGIN';
-let SIGN_UP_VIEW = 'SIGNUP';
+import LogIn from './LogIn';
+import SignUp from './SignUp';
 
-export function Home(props) {
-  return (
-    <View style={styles.container}>
-      <Text>postAR</Text>
-      <View>
-        <TouchableHighlight
-          style={styles.buttons}
-          underlayColor="#68a0ff"
-          onPress={props.changeScreenView(LOGIN_VIEW)}
-        >
-          <Text>Login</Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.buttons}
-          underlayColor="#68a0ff"
-          onPress={props.changeScreenView(SIGN_UP_VIEW)}
-        >
-          <Text>Sign Up</Text>
-        </TouchableHighlight>
-      </View>
-    </View>
-  );
+export class Home extends Component {
+  constructor() {
+    super();
+    this.state = {
+      logInPage: true,
+    };
+    this.changeLogInPageState = this.changeLogInPageState.bind(this);
+  }
+
+  changeLogInPageState() {
+    return () => {
+      this.setState({ logInPage: false });
+    };
+  }
+
+  render() {
+    if (this.state.logInPage) {
+      return (
+        <LogIn
+          changeUserState={this.props.changeUserState}
+          changeLogInPageState={this.changeLogInPageState}
+        />
+      );
+    } else {
+      return <SignUp changeUserState={this.props.changeUserState} />;
+    }
+  }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  buttons: {
-    height: 80,
-    width: 150,
-    paddingTop: 20,
-    paddingBottom: 20,
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: '#68a0cf',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#fff',
-  },
-});
 
 export default Home;

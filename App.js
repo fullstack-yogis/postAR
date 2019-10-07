@@ -1,41 +1,42 @@
 import React, { Component } from 'react';
 
-// Components
 import Home from './components/Home';
-import LogIn from './components/LogIn';
-import SignUp from './components/SignUp';
 
-// View Types for state
-let HOME_VIEW = 'HOME';
-let LOGIN_VIEW = 'LOGIN';
-let SIGN_UP_VIEW = 'SIGNUP';
+import { ViroARSceneNavigator } from 'react-viro';
+import { APP_SECRET } from './front_secrets';
 
-let defaultScreenView = HOME_VIEW;
+let sharedProps = {
+  apiKey: APP_SECRET,
+};
+
+let InitialARScene = require('./js/HelloWorldSceneAR');
 
 export default class postAR extends Component {
   constructor() {
     super();
     this.state = {
-      screenView: defaultScreenView,
+      sharedProps: sharedProps,
+      user: null,
     };
-    this.changeScreenView = this.changeScreenView.bind(this);
+    this.changeUserState = this.changeUserState.bind(this);
   }
 
-  changeScreenView(screenView) {
-    return () => {
-      this.setState({
-        screenView: screenView,
-      });
-    };
+  changeUserState(user) {
+    this.setState({
+      user: user,
+    });
   }
 
   render() {
-    if (this.state.screenView === HOME_VIEW) {
-      return <Home changeScreenView={this.changeScreenView} />;
-    } else if (this.state.screenView === LOGIN_VIEW) {
-      return <LogIn />;
-    } else if (this.state.screenView === SIGN_UP_VIEW) {
-      return <SignUp />;
+    if (this.state.user) {
+      return (
+        <ViroARSceneNavigator
+          {...this.state.sharedProps}
+          initialScene={{ scene: InitialARScene }}
+        />
+      );
+    } else {
+      return <Home changeUserState={this.changeUserState} />;
     }
   }
 }
