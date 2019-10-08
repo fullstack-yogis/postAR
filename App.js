@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 
-
 import Home from './components/Home';
-import AllPosts from './Components/AllPosts';
-
+import AllPosts from './components/AllPosts';
 
 import { ViroARSceneNavigator } from 'react-viro';
 import { APP_SECRET } from './front_secrets';
@@ -25,7 +23,6 @@ export default class postAR extends Component {
   }
 
   changeUserState(userId) {
-
     this.setState({
       user: userId,
     });
@@ -44,4 +41,3 @@ export default class postAR extends Component {
     }
   }
 }
-

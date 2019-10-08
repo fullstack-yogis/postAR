@@ -10,7 +10,7 @@ import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 const httpLink = createHttpLink({
-  uri: 'http://172.16.23.176:4000',
+  uri: 'https://postit-server.herokuapp.com',
 });
 
 const client = new ApolloClient({
