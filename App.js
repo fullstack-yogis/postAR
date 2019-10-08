@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { createApolloFetch } from 'apollo-fetch'
 
 import Welcome from './components/Welcome';
 import AllPosts from './components/AllPosts';
-import Login from './components/LogIn'
+import Login from './components/LogIn';
 
 import { ViroARSceneNavigator } from 'react-viro';
 
@@ -12,8 +11,6 @@ import { APP_SECRET } from './front_secrets';
 let sharedProps = {
   apiKey: APP_SECRET,
 };
-
-
 
 let InitialARScene = require('./js/HelloWorldSceneAR');
 
@@ -34,19 +31,17 @@ export default class postAR extends Component {
   }
 
   render() {
-    return (
-      <Login />
-    )
+    return <Login />;
 
-  //   if (this.state.user) {
-  //     return (
-  //       <ViroARSceneNavigator
-  //         {...this.state.sharedProps}
-  //         initialScene={{ scene: InitialARScene }}
-  //       />
-  //     );
-  //   } else {
-  //     return <Welcome changeUserState={this.changeUserState} />;
-  //   }
+    //   if (this.state.user) {
+    //     return (
+    //       <ViroARSceneNavigator
+    //         {...this.state.sharedProps}
+    //         initialScene={{ scene: InitialARScene }}
+    //       />
+    //     );
+    //   } else {
+    //     return <Welcome changeUserState={this.changeUserState} />;
+    //   }
   }
 }

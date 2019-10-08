@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AUTH_TOKEN } from '../constants'
+import { AUTH_TOKEN } from '../constants';
 import {
   StyleSheet,
   View,
@@ -7,9 +7,10 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
+  AsyncStorage,
 } from 'react-native';
-import { Mutation } from 'react-apollo'
-import gql from 'graphql-tag'
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
 
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation($email: String!, $password: String!, $name: String!) {
@@ -17,7 +18,7 @@ const SIGNUP_MUTATION = gql`
       token
     }
   }
-`
+`;
 
 const LOGIN_MUTATION = gql`
   mutation LoginMutation($email: String!, $password: String!) {
@@ -25,7 +26,7 @@ const LOGIN_MUTATION = gql`
       token
     }
   }
-`
+`;
 
 export default class Login extends Component {
   constructor() {
@@ -34,20 +35,35 @@ export default class Login extends Component {
       email: '',
       password: '',
       name: '',
-      login: true // switch between Login and SignUp
+      login: true, // switch between Login and SignUp
     };
   }
 
-  _confirm = async () => {
-    // ... you'll implement this 🔜
-  }
+  _confirm = async data => {
+    const { token } = this.state.login ? data.login : data.signup;
+    this._saveUserData(token);
+    // this.props.history.push(`/`);
+  };
 
-  _saveUserData = token => {
-    localStorage.setItem(AUTH_TOKEN, token)
-  }
+  _saveUserData = async token => {
+    try {
+      await AsyncStorage.setItem(AUTH_TOKEN, JSON.stringify(token));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  _getUserData = async () => {
+    try {
+      let token = await AsyncStorage.getItem(AUTH_TOKEN);
+      return JSON.parse(token);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   render() {
-    const { login, email, password, name } = this.state
+    const { login, email, password, name } = this.state;
     return (
       <View>
         <Text>{login ? 'Login' : 'Sign Up'}</Text>
@@ -58,29 +74,28 @@ export default class Login extends Component {
               // multiline={true}
               style={styles.textInput}
               placeholder="Your name"
-              onChangeText={(name) => this.setState({name})}
+              onChangeText={name => this.setState({ name })}
               value={this.state.name}
             />
           )}
           <TextInput
-              // multiline={true}
-              style={styles.textInput}
-              placeholder="Your email address"
-              onChangeText={(email) => this.setState({email})}
-              value={this.state.email}
-            />
-            <TextInput
-              // multiline={true}
-              style={styles.textInput}
-              placeholder="Your password"
-              onChangeText={(password) => this.setState({password})}
-              value={this.state.password}
-            />
+            // multiline={true}
+            style={styles.textInput}
+            placeholder="Your email address"
+            onChangeText={email => this.setState({ email })}
+            value={this.state.email}
+          />
+          <TextInput
+            // multiline={true}
+            style={styles.textInput}
+            placeholder="Your password"
+            onChangeText={password => this.setState({ password })}
+            value={this.state.password}
+          />
         </View>
 
         <View>
           <View>
-
             <Mutation
               mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
               variables={{ email, password, name }}
@@ -96,18 +111,20 @@ export default class Login extends Component {
             </Mutation>
 
             <Button
-              title={login ? 'need to create an account?' : 'already have an account?'}
+              title={
+                login
+                  ? 'need to create an account?'
+                  : 'already have an account?'
+              }
               color="#f194ff"
               onPress={() => this.setState({ login: !login })}
             />
           </View>
         </View>
-        </View>
-    )
+        <Text> {this._getUserData()}</Text>
+      </View>
+    );
   }
-
-
-
 }
 const styles = StyleSheet.create({
   container: {
