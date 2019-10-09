@@ -1,5 +1,5 @@
 import { AppRegistry } from 'react-native';
-import AppRoot from './App.js';
+import AppNavigator from './AppNavigator';
 import React, { Component } from 'react';
 
 import { ApolloProvider } from 'react-apollo';
@@ -18,7 +18,7 @@ const client = new ApolloClient({
 
 const App = () => (
   <ApolloProvider client={client}>
-    <AppRoot />
+    <AppNavigator />
   </ApolloProvider>
 );
 
