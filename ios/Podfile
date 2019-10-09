@@ -3,4 +3,11 @@ target 'ViroSample' do
   use_frameworks!
   pod 'ViroReact', :path => '../node_modules/react-viro/ios/'
   pod 'ViroKit', :path => '../node_modules/react-viro/ios/dist/ViroRenderer/'
+  # pod 'React', path: "../node_modules/react-native"
+  # pod 'yoga', path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
+  # pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
+
 end
+
+

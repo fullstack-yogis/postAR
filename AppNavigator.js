@@ -4,8 +4,8 @@ import AllPosts from './components/AllPosts';
 import Login from './components/LogIn';
 
 const MainNavigator = createStackNavigator({
-  Home: { screen: AllPosts },
   Login: { screen: Login },
+  Home: { screen: AllPosts },
 });
 const AppNavigator = createAppContainer(MainNavigator);
 

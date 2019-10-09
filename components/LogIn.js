@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+// import AsyncStorage from '@react-native-community/async-storage';
 
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation($email: String!, $password: String!, $name: String!) {
@@ -42,7 +43,14 @@ export default class Login extends Component {
   _confirm = async data => {
     const { token } = this.state.login ? data.login : data.signup;
     this._saveUserData(token);
-
+    const { navigate } = this.props.navigation;
+    navigate('Home');
+    this.setState({
+      email: '',
+      password: '',
+      name: '',
+      login: true, // switch between Login and SignUp
+    });
     // this.props.history.push(`/`);
   };
 
@@ -63,6 +71,12 @@ export default class Login extends Component {
   };
 
   render() {
+    // const { navigate } = this.props.navigation;
+    // const token = AsyncStorage.getItem(AUTH_TOKEN);
+    // if (token) {
+    //   return navigate('Home');
+    // }
+
     const { login, email, password, name } = this.state;
     return (
       <View>
