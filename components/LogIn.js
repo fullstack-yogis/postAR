@@ -42,12 +42,13 @@ export default class Login extends Component {
   _confirm = async data => {
     const { token } = this.state.login ? data.login : data.signup;
     this._saveUserData(token);
+
     // this.props.history.push(`/`);
   };
 
   _saveUserData = async token => {
     try {
-      await AsyncStorage.setItem(AUTH_TOKEN, JSON.stringify(token));
+      await AsyncStorage.setItem(AUTH_TOKEN, token);
     } catch (error) {
       console.log(error);
     }
@@ -55,8 +56,7 @@ export default class Login extends Component {
 
   _getUserData = async () => {
     try {
-      let token = await AsyncStorage.getItem(AUTH_TOKEN);
-      return JSON.parse(token);
+      return await AsyncStorage.getItem(AUTH_TOKEN);
     } catch (error) {
       console.log(error);
     }
@@ -121,11 +121,11 @@ export default class Login extends Component {
             />
           </View>
         </View>
-        <Text> {this._getUserData()}</Text>
       </View>
     );
   }
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

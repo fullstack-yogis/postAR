@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-
+import { AUTH_TOKEN } from './constants';
+import { AsyncStorage } from 'react-native';
 import Welcome from './components/Welcome';
 import AllPosts from './components/AllPosts';
 import Login from './components/LogIn';
