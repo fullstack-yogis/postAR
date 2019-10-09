@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-
-import Home from './components/Home';
+import { AUTH_TOKEN } from './constants';
+import { AsyncStorage } from 'react-native';
+import Welcome from './components/Welcome';
 import AllPosts from './components/AllPosts';
+import Login from './components/LogIn';
 
 import { ViroARSceneNavigator } from 'react-viro';
+
 import { APP_SECRET } from './front_secrets';
 
 let sharedProps = {
@@ -29,15 +32,17 @@ export default class postAR extends Component {
   }
 
   render() {
-    if (this.state.user) {
-      return (
-        <ViroARSceneNavigator
-          {...this.state.sharedProps}
-          initialScene={{ scene: InitialARScene }}
-        />
-      );
-    } else {
-      return <Home changeUserState={this.changeUserState} />;
-    }
+    return <Login />;
+
+    //   if (this.state.user) {
+    //     return (
+    //       <ViroARSceneNavigator
+    //         {...this.state.sharedProps}
+    //         initialScene={{ scene: InitialARScene }}
+    //       />
+    //     );
+    //   } else {
+    //     return <Welcome changeUserState={this.changeUserState} />;
+    //   }
   }
 }

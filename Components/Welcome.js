@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LogIn from './LogIn';
 import SignUp from './SignUp';
 
-export class Home extends Component {
+export default class Welcome extends Component {
   constructor() {
     super();
     this.state = {
@@ -33,4 +33,4 @@ export class Home extends Component {
   }
 }
 
-export default Home;
+

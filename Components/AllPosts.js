@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import SinglePost from './SinglePost';
+import CreatePost from './CreatePost'
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
+import { specifiedRules } from 'graphql';
+
 
 const FEED_QUERY = gql`
   {
@@ -15,8 +18,11 @@ const FEED_QUERY = gql`
   }
 `;
 
+
 class AllPosts extends Component {
+
   render() {
+
     return (
       <View>
         <Query query={FEED_QUERY}>
@@ -35,6 +41,7 @@ class AllPosts extends Component {
             );
           }}
         </Query>
+        <CreatePost />
       </View>
     );
   }

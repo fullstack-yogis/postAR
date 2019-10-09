@@ -1,5 +1,5 @@
 import { AppRegistry } from 'react-native';
-import AppRoot from './App.js';
+import AppRoot from './App';
 import React, { Component } from 'react';
 
 import { ApolloProvider } from 'react-apollo';
@@ -18,6 +18,7 @@ const client = new ApolloClient({
 
 const App = () => (
   <ApolloProvider client={client}>
+    {/* calling App.js */}
     <AppRoot />
   </ApolloProvider>
 );
