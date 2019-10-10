@@ -52,8 +52,8 @@ class CreatePost extends Component {
       xDistance: 15.5,
       yDistance: 20.5,
       zDistance: -10.5,
-      height: 1,
-      width: 1,
+      height: 1.0,
+      width: 1.0,
     };
   }
 

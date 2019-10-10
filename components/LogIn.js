@@ -48,6 +48,7 @@ export default class Login extends Component {
 
   _saveUserData = async token => {
     try {
+      await AsyncStorage.setItem(AUTH_TOKEN, token);
       this.props.setUserTokenAndView(token, 'allPosts');
     } catch (error) {
       console.log(error);
