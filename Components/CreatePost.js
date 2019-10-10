@@ -18,8 +18,18 @@ const POST_MUTATION = gql`
     $xDistance: Float!
     $yDistance: Float!
     $zDistance: Float!
+    $height: Float!
+    $width: Float!
   ) {
-    post(description: $description, privacy: $privacy, xDistance: $xDistance, yDistance: $yDistance, zDistance: $zDistance) {
+    post(
+      description: $description
+      privacy: $privacy
+      xDistance: $xDistance
+      yDistance: $yDistance
+      zDistance: $zDistance
+      height: $height
+      width: $width
+    ) {
       id
       createdAt
       privacy
@@ -27,6 +37,8 @@ const POST_MUTATION = gql`
       yDistance
       zDistance
       description
+      height
+      width
     }
   }
 `;
@@ -37,14 +49,24 @@ class CreatePost extends Component {
     this.state = {
       description: '',
       privacy: false,
-     xDistance: 15.5,
-     yDistance: 20.5,
-     zDistance: -10.5,
+      xDistance: 15.5,
+      yDistance: 20.5,
+      zDistance: -10.5,
+      height: 1,
+      width: 1,
     };
   }
 
   render() {
-    const { description, xDistance, yDistance, zDistance, privacy } = this.state;
+    const {
+      description,
+      xDistance,
+      yDistance,
+      zDistance,
+      height,
+      width,
+      privacy,
+    } = this.state;
     return (
       <View>
         <TextInput
@@ -64,7 +86,15 @@ class CreatePost extends Component {
         </Picker>
         <Mutation
           mutation={POST_MUTATION}
-          variables={{ description, privacy, xDistance, yDistance, zDistance }}
+          variables={{
+            description,
+            privacy,
+            xDistance,
+            yDistance,
+            zDistance,
+            height,
+            width,
+          }}
         >
           {postMutation => (
             <Button title="Press me" color="#f194ff" onPress={postMutation} />
