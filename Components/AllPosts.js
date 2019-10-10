@@ -12,7 +12,6 @@ const FEED_QUERY = gql`
     feed {
       id
       createdAt
-      location
       description
     }
   }

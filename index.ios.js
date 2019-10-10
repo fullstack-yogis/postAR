@@ -8,29 +8,24 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 import { AUTH_TOKEN } from './constants';
 
-const authLink = setContext((_, { headers }) => {
-  AsyncStorage.getItem(AUTH_TOKEN).then(function(token) {
-    console.log('token  🥰  🥰  🥰  🥰 ', token);
+const authLink = setContext(async (_, { headers }) => {
+  try {
+    let token = await AsyncStorage.getItem(AUTH_TOKEN)
 
-    let headersObj = {
+    return {
       headers: {
         ...headers,
-        Authorization: token ? `Bearer ${token}` : '',
-
-        // Authorization:
-        //   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjazFqcXo0NmFpcnZyMGIwOXh4amJsb25pIiwiaWF0IjoxNTcwNzE5NzE3fQ.9E0mF9mR0hGW7idk_oh8ulOhBBOhSUIItWWRLik_QE0',
-      },
+        authorization: token ? `Bearer ${token}` : '',
+      }
     }
-
-    console.log('headers--------------', headersObj)
-    return headersObj
-  });
+  } catch (error) {
+    console.log(error)
+  }
 });
 
 const httpLink = createHttpLink({
   // uri: 'https://postit-server.herokuapp.com',
-  // uri: 'https://172.16.23.242',
-  uri: 'http://172.16.23.242:4000'
+  uri: 'http://172.16.23.242:4000',
 });
 
 const client = new ApolloClient({
