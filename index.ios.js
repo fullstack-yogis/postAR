@@ -11,21 +11,26 @@ import { AUTH_TOKEN } from './constants';
 const authLink = setContext((_, { headers }) => {
   AsyncStorage.getItem(AUTH_TOKEN).then(function(token) {
     console.log('token  🥰  🥰  🥰  🥰 ', token);
-    return {
+
+    let headersObj = {
       headers: {
         ...headers,
         Authorization: token ? `Bearer ${token}` : '',
 
         // Authorization:
-        //   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjazFqcXo0NmFpcnZyMGIwOXh4amJsb25pIiwiaWF0IjoxNTcwNjc1MDg3fQ.xH675d5MyKZgtdxvB4HUuLQEL9QmZyqhFhgGqOL0nb8',
+        //   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjazFqcXo0NmFpcnZyMGIwOXh4amJsb25pIiwiaWF0IjoxNTcwNzE5NzE3fQ.9E0mF9mR0hGW7idk_oh8ulOhBBOhSUIItWWRLik_QE0',
       },
-    };
+    }
+
+    console.log('headers--------------', headersObj)
+    return headersObj
   });
 });
 
 const httpLink = createHttpLink({
-  uri: 'https://postit-server.herokuapp.com',
-  // uri: 'https://192.168.1.17',
+  // uri: 'https://postit-server.herokuapp.com',
+  // uri: 'https://172.16.23.242',
+  uri: 'http://172.16.23.242:4000'
 });
 
 const client = new ApolloClient({
