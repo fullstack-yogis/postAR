@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+import AllPosts from './AllPosts';
 // import AsyncStorage from '@react-native-community/async-storage';
 
 const SIGNUP_MUTATION = gql`
@@ -43,18 +44,12 @@ export default class Login extends Component {
   _confirm = async data => {
     const { token } = this.state.login ? data.login : data.signup;
     this._saveUserData(token);
-    this.setState({
-      email: '',
-      password: '',
-      name: '',
-      login: true, // switch between Login and SignUp
-    });
-    // this.props.history.push(`/`);
   };
 
   _saveUserData = async token => {
     try {
       await AsyncStorage.setItem(AUTH_TOKEN, token);
+      this.props.setUserTokenAndView(token, 'allPosts');
     } catch (error) {
       console.log(error);
     }
@@ -69,6 +64,9 @@ export default class Login extends Component {
   };
 
   render() {
+    if (this.props.token) {
+      this.props.changeCurrentView('allPosts');
+    }
     const { login, email, password, name } = this.state;
     return (
       <View>
