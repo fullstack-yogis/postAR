@@ -14,10 +14,10 @@ const authLink = setContext((_, { headers }) => {
     return {
       headers: {
         ...headers,
-        Authorization: token ? `Bearer ${token}` : '',
+        // Authorization: token ? `Bearer ${token}` : '',
 
-        // Authorization:
-        //   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjazFqcXo0NmFpcnZyMGIwOXh4amJsb25pIiwiaWF0IjoxNTcwNjc1MDg3fQ.xH675d5MyKZgtdxvB4HUuLQEL9QmZyqhFhgGqOL0nb8',
+        Authorization:
+          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjazFqaHB0NWloczRnMGIwOTZkbjJsdmJmIiwiaWF0IjoxNTcwNzIyMjM2fQ.BgNmG7i81FdOrdOzdx23iuvPQnI1L0ucwKCbbCQM4EU',
       },
     };
   });
