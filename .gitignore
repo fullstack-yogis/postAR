@@ -59,5 +59,3 @@ buck-out/
 back_secrets.js
 front_secrets.js
 
-#large lib
-ios/Pods/GVRSDK/Libraries/libGVRSDK.a

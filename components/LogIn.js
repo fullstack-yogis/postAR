@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+import AllPosts from './AllPosts';
 // import AsyncStorage from '@react-native-community/async-storage';
 
 const SIGNUP_MUTATION = gql`
@@ -41,20 +42,23 @@ export default class Login extends Component {
   }
 
   _confirm = async data => {
+    console.log('🤩🤩🤩🤩here is the data', data);
     const { token } = this.state.login ? data.login : data.signup;
     this._saveUserData(token);
-    this.setState({
-      email: '',
-      password: '',
-      name: '',
-      login: true, // switch between Login and SignUp
-    });
-    // this.props.history.push(`/`);
   };
 
   _saveUserData = async token => {
     try {
-      await AsyncStorage.setItem(AUTH_TOKEN, token);
+      console.log('before put token into asyncStorage🤩🤩🤩🤩🤩🤩', token);
+      const newToken = await AsyncStorage.setItem(AUTH_TOKEN, token);
+      console.log('after put token into asyncStorage🤩🤩🤩🤩🤩🤩', newToken);
+      const anotherToken = await AsyncStorage.getItem(AUTH_TOKEN);
+      console.log(
+        'after take token out from asyncStorage🤩🤩🤩🤩🤩🤩',
+        anotherToken
+      );
+
+      this.props.setUserTokenAndView(token, 'allPosts');
     } catch (error) {
       console.log(error);
     }
@@ -69,6 +73,9 @@ export default class Login extends Component {
   };
 
   render() {
+    if (this.props.token) {
+      this.props.changeCurrentView('allPosts');
+    }
     const { login, email, password, name } = this.state;
     return (
       <View>

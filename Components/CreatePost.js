@@ -1,66 +1,75 @@
-import React, { Component } from 'react'
-import { Text, View, Alert, StyleSheet, TextInput, Picker, Button } from 'react-native';
-import { Mutation } from 'react-apollo'
-import gql from 'graphql-tag'
+import React, { Component } from 'react';
+import {
+  Text,
+  View,
+  Alert,
+  StyleSheet,
+  TextInput,
+  Picker,
+  Button,
+} from 'react-native';
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
 
 const POST_MUTATION = gql`
-  mutation PostMutation($description: String!, $privacy: Boolean!, $location: String!) {
+  mutation PostMutation(
+    $description: String!
+    $privacy: Boolean!
+    $location: String!
+  ) {
     post(description: $description, privacy: $privacy, location: $location) {
       id
       createdAt
-      url
+      privacy
+      location
       description
     }
   }
-`
+`;
 
 class CreatePost extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
       description: '',
       privacy: false,
-      location: 'NYC'
-    }
+      location: 'NYC',
+    };
   }
 
   render() {
-    const { description, location, privacy } = this.state
+    const { description, location, privacy } = this.state;
     return (
       <View>
         <TextInput
-              // multiline={true}
-              style={styles.textInput}
-              placeholder="Speak up!"
-              onChangeText={(description) => this.setState({description})}
-              value={this.state.description}
-            />
+          // multiline={true}
+          style={styles.textInput}
+          placeholder="Speak up!"
+          onChangeText={description => this.setState({ description })}
+          value={this.state.description}
+        />
         <Picker
           selectedValue={this.state.privacy}
-          style={{height: 50, width: 100}}
-          onValueChange={(privacy, itemIndex) =>
-            this.setState({privacy})
-          }>
+          style={{ height: 50, width: 100 }}
+          onValueChange={(privacy, itemIndex) => this.setState({ privacy })}
+        >
           <Picker.Item label="Public" value={false} />
           <Picker.Item label="Private" value={true} />
         </Picker>
-        <Mutation mutation={POST_MUTATION} variables={{ description, privacy, location }}>
-          {(postMutation) => (
-            <Button
-              title="Press me"
-              color="#f194ff"
-              onPress={postMutation}
-            />
+        <Mutation
+          mutation={POST_MUTATION}
+          variables={{ description, privacy, location }}
+        >
+          {postMutation => (
+            <Button title="Press me" color="#f194ff" onPress={postMutation} />
           )}
         </Mutation>
-
-        </View>
-    )
+      </View>
+    );
   }
 }
 
-export default CreatePost
-
+export default CreatePost;
 
 const styles = StyleSheet.create({
   container: {
@@ -79,23 +88,22 @@ const styles = StyleSheet.create({
     marginLeft: 40,
     // color: 'white',
     fontWeight: 'bold',
-    flex: 1
+    flex: 1,
   },
   headerContainer: {
-      // height: 30,
-      // flex: 1,
-      flexDirection: 'row',
-      backgroundColor: '#800000',
+    // height: 30,
+    // flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#800000',
 
-      // justifyContent: 'center',
-      // marginTop: 40,
-      alignItems: 'center',
-      // paddingLeft: 30,
-      // borderBottomWidth: 1,
-      // backgroundColor: '#800000',
-      // color: 'white',
-      // borderBottomColor: '#800000'
-
+    // justifyContent: 'center',
+    // marginTop: 40,
+    alignItems: 'center',
+    // paddingLeft: 30,
+    // borderBottomWidth: 1,
+    // backgroundColor: '#800000',
+    // color: 'white',
+    // borderBottomColor: '#800000'
   },
   close: {
     width: 30,
@@ -127,7 +135,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    paddingTop: 20
+    paddingTop: 20,
   },
   textInput: {
     paddingLeft: 40,
@@ -145,6 +153,6 @@ const styles = StyleSheet.create({
     // height: 80
   },
   day: {
-    width: 20
-  }
+    width: 20,
+  },
 });
