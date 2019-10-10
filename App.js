@@ -48,14 +48,14 @@ export default class postAR extends Component {
   }
 
   async componentDidMount() {
-    const token = await AsyncStorage.getItem(AUTH_TOKEN);
-    console.log(
-      'component mounted get token from asyncStorage🤩🤩🤩🤩🤩🤩',
-      token
-    );
-    if (token) {
-      this.setUserTokenAndView(token, 'allPosts');
-    }
+    // const token = await AsyncStorage.getItem(AUTH_TOKEN);
+    // console.log(
+    //   'component mounted get token from asyncStorage🤩🤩🤩🤩🤩🤩',
+    //   token
+    // );
+    // if (token) {
+    //   this.setUserTokenAndView(token, 'allPosts');
+    // }
     // await AsyncStorage.removeItem(AUTH_TOKEN);
   }
   render() {

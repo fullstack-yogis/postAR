@@ -42,7 +42,6 @@ export default class Login extends Component {
   }
 
   _confirm = async data => {
-    console.log('🤩🤩🤩🤩here is the data', data);
     const { token } = this.state.login ? data.login : data.signup;
     this._saveUserData(token);
   };
