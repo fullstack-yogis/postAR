@@ -102,63 +102,67 @@ export default class postAR extends Component {
     // await AsyncStorage.removeItem(AUTH_TOKEN);
   }
   render() {
-    if (this.state.currentView === 'login') {
-      return (
-        <Login
-          changeCurrentView={this.changeCurrentView}
-          token={this.state.token}
-          setUserTokenAndView={this.setUserTokenAndView}
-        />
-      );
-    }
-    if (this.state.currentView === 'allPosts1') {
-      return (
-        <AllPosts
-          changeCurrentView={this.changeCurrentView}
-          token={this.state.token}
-          setUserTokenAndView={this.setUserTokenAndView}
-        />
-      );
-    } else if (this.state.newPostInd) {
-      return (
-        <NewPost
-          changeNewPostState={this.changeNewPostState}
-          updateNewPost={this.updateNewPost}
-          changeMenuState={this.changeMenuState}
-        />
-      );
-    } else if (this.state.currentView === 'allPosts') {
-      return (
-        <View style={{ flex: 1 }}>
-          {/* <Query query={FEED_QUERY}>
-            {({ loading, error, data }) => {
-              if (loading) return <Text>Fetching</Text>;
-              if (error) return <Text>Error</Text>;
+    return (
+      <AllPosts />
+    )
+  }
+    // if (this.state.currentView === 'login') {
+    //   return (
+    //     <Login
+    //       changeCurrentView={this.changeCurrentView}
+    //       token={this.state.token}
+    //       setUserTokenAndView={this.setUserTokenAndView}
+    //     />
+    //   );
+    // }
+    // if (this.state.currentView === 'allPosts1') {
+    //   return (
+    //     <AllPosts
+    //       changeCurrentView={this.changeCurrentView}
+    //       token={this.state.token}
+    //       setUserTokenAndView={this.setUserTokenAndView}
+    //     />
+    //   );
+    // } else if (this.state.newPostInd) {
+    //   return (
+    //     <NewPost
+    //       changeNewPostState={this.changeNewPostState}
+    //       updateNewPost={this.updateNewPost}
+    //       changeMenuState={this.changeMenuState}
+    //     />
+    //   );
+    // } else if (this.state.currentView === 'allPosts') {
+    //   return (
+    //     <View style={{ flex: 1 }}>
+    //       {/* <Query query={FEED_QUERY}>
+    //         {({ loading, error, data }) => {
+    //           if (loading) return <Text>Fetching</Text>;
+    //           if (error) return <Text>Error</Text>;
 
-              const postsToRender = data.feed;
-              console.log('posts ' + postsToRender);
-              // this.setState({ allPosts: postsToRender });
-              return <View>{postsToRender.map(post => null)}</View>;
-            }}
-          </Query> */}
+    //           const postsToRender = data.feed;
+    //           console.log('posts ' + postsToRender);
+    //           // this.setState({ allPosts: postsToRender });
+    //           return <View>{postsToRender.map(post => null)}</View>;
+    //         }}
+    //       </Query> */}
 
-          {this.renderMenu()}
-          <ViroARSceneNavigator
-            apiKey={APP_SECRET}
-            initialScene={{ scene: InitialARScene }}
-            viroAppProps={{
-              changeMenuState: this.changeMenuState,
-              newPost: this.state.newPost,
-              allPosts: this.state.allPosts || [
-                { id: 1, description: 'hello 1' },
-                { id: 2, description: 'hello 2' },
-                { id: 3, description: 'hello 3' },
-              ],
-            }}
-          />
-        </View>
-      );
-    }
+    //       {this.renderMenu()}
+    //       <ViroARSceneNavigator
+    //         apiKey={APP_SECRET}
+    //         initialScene={{ scene: InitialARScene }}
+    //         viroAppProps={{
+    //           changeMenuState: this.changeMenuState,
+    //           newPost: this.state.newPost,
+    //           allPosts: this.state.allPosts || [
+    //             { id: 1, description: 'hello 1' },
+    //             { id: 2, description: 'hello 2' },
+    //             { id: 3, description: 'hello 3' },
+    //           ],
+    //         }}
+    //       />
+    //     </View>
+    //   );
+    // }
     //   if (this.state.currentView === 'login') {
     //     return (
     //       <ViroARSceneNavigator
@@ -169,5 +173,5 @@ export default class postAR extends Component {
     //   } else {
     //     return <Login changeUserState={this.changeUserState} />;
     //   }
-  }
+
 }

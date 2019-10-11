@@ -3,9 +3,10 @@ import { Text, View } from 'react-native';
 import SinglePost from './SinglePost';
 import CreatePost from './CreatePost';
 import gql from 'graphql-tag';
-import { withApollo } from 'react-apollo';
+import { withApollo, Subscription } from 'react-apollo';
 import { specifiedRules } from 'graphql';
 import { client } from '../index.ios';
+import { useSubscription } from '@apollo/react-hooks';
 
 const FEED_QUERY = gql`
   {
@@ -48,7 +49,7 @@ class AllPosts extends Component {
         query: FEED_QUERY,
       });
       console.log('s2m----------', data)
-      this._subscribeToNewPosts()
+      // this._subscribeToNewPosts()
       this.setState({
         posts: data.feed,
       });
@@ -56,6 +57,15 @@ class AllPosts extends Component {
       console.error(error);
     }
   }
+
+  // subscribePlease() {
+  //   const { data, loading } = useSubscription(
+  //     NEW_POSTS_SUBSCRIPTION
+  //   );
+
+  //   console.log('=---------subscribe data', data)
+  //   // return <h4>New comment: {!loading && commentAdded.content}</h4>;
+  // }
 
   async getFeed() {
     try {
@@ -171,6 +181,18 @@ class AllPosts extends Component {
   render() {
     return (
       <View>
+        <Subscription
+          subscription={NEW_POSTS_SUBSCRIPTION}
+          onError={err => console.log(err)}
+          onCompleted={data => console.log(data)}
+        >
+          {() => {
+            this.setState({
+              posts: data
+            })
+            // return <Text>Current list of friends in your party : </Text>;
+          }}
+        </Subscription>
         <View>
           {this.state.posts.map(post => (
             <SinglePost key={post.id} post={post} />
