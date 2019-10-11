@@ -28,7 +28,7 @@ const httpLink = createHttpLink({
   uri: 'http://172.16.23.176:4000',
 });
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });

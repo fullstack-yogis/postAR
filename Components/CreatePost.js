@@ -8,7 +8,7 @@ import {
   Picker,
   Button,
 } from 'react-native';
-import { Mutation } from 'react-apollo';
+import { Mutation, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 
 const POST_MUTATION = gql`
@@ -57,7 +57,7 @@ class CreatePost extends Component {
     };
   }
 
-  render() {
+  async createPost() {
     const {
       description,
       xDistance,
@@ -67,6 +67,40 @@ class CreatePost extends Component {
       width,
       privacy,
     } = this.state;
+    console.log('ENTERED CREATEPOST!!!!!!!!!!', {
+      description,
+      xDistance,
+      yDistance,
+      zDistance,
+      height,
+      width,
+      privacy,
+    });
+
+    const newPost = await this.props.client.mutate({
+      mutation: POST_MUTATION,
+      variables: {
+        description,
+        privacy,
+        xDistance,
+        yDistance,
+        zDistance,
+        height,
+        width,
+      },
+    });
+    console.log('NEW POST CREATED!!!!!!!!!!', newPost);
+    this.setState({
+      description: '',
+      privacy: false,
+      xDistance: 15.5,
+      yDistance: 20.5,
+      zDistance: -10.5,
+      height: 1.0,
+      width: 1.0,
+    });
+  }
+  render() {
     return (
       <View>
         <TextInput
@@ -84,28 +118,21 @@ class CreatePost extends Component {
           <Picker.Item label="Public" value={false} />
           <Picker.Item label="Private" value={true} />
         </Picker>
-        <Mutation
+        {/* <Mutation
           mutation={POST_MUTATION}
-          variables={{
-            description,
-            privacy,
-            xDistance,
-            yDistance,
-            zDistance,
-            height,
-            width,
-          }}
+          variables={}
         >
           {postMutation => (
             <Button title="Press me" color="#f194ff" onPress={postMutation} />
           )}
-        </Mutation>
+        </Mutation> */}
+        <Button title="Press me" color="#f194ff" onPress={this.createPost} />
       </View>
     );
   }
 }
 
-export default CreatePost;
+export default withApollo(CreatePost);
 
 const styles = StyleSheet.create({
   container: {
