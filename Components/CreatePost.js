@@ -58,30 +58,18 @@ class CreatePost extends Component {
   }
 
   async createPost() {
-    const {
-      description,
-      xDistance,
-      yDistance,
-      zDistance,
-      height,
-      width,
-      privacy,
-    } = this.state;
-    console.log('ENTERED CREATEPOST!!!!!!!!!!');
-
-    const newPost = await this.props.client.mutate({
+    await this.props.client.mutate({
       mutation: POST_MUTATION,
       variables: {
-        description,
-        privacy,
-        xDistance,
-        yDistance,
-        zDistance,
-        height,
-        width,
+        description: this.state.description,
+        privacy: this.state.privacy,
+        xDistance: this.state.xDistance,
+        yDistance: this.state.yDistance,
+        zDistance: this.state.zDistance,
+        height: this.state.height,
+        width: this.state.width,
       },
     });
-    console.log('NEW POST CREATED!!!!!!!!!!', newPost);
     this.setState({
       description: '',
       privacy: false,
