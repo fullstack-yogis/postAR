@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import SinglePost from './SinglePost';
-import CreatePost from './CreatePost'
+import CreatePost from './CreatePost';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { specifiedRules } from 'graphql';
-
+import { client } from '../index.ios';
 
 const FEED_QUERY = gql`
   {
@@ -17,14 +17,34 @@ const FEED_QUERY = gql`
   }
 `;
 
-
 class AllPosts extends Component {
+  constructor() {
+    super();
+    this.state = {
+      posts: [],
+    };
+  }
+
+  async componentDidMount() {
+    try {
+      //query from db
+      const { data } = await client.query({
+        query: FEED_QUERY,
+      });
+      console.log('data in componentdidmount:', data);
+      //set to local state
+      this.setState({
+        posts: data.feed,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   render() {
-
     return (
       <View>
-        <Query query={FEED_QUERY}>
+        {/* <Query query={FEED_QUERY}>
           {({ loading, error, data }) => {
             if (loading) return <Text>Fetching</Text>;
             if (error) return <Text>Error</Text>;
@@ -39,7 +59,12 @@ class AllPosts extends Component {
               </View>
             );
           }}
-        </Query>
+        </Query> */}
+        <View>
+          {this.state.posts.map(post => (
+            <SinglePost key={post.id} post={post} />
+          ))}
+        </View>
         <CreatePost />
       </View>
     );
