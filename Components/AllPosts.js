@@ -30,7 +30,6 @@ class AllPosts extends Component {
       const { data } = await this.props.client.query({
         query: FEED_QUERY,
       });
-      console.log('data in componentdidmount:', data);
       this.setState({
         posts: data.feed,
       });
