@@ -67,15 +67,7 @@ class CreatePost extends Component {
       width,
       privacy,
     } = this.state;
-    console.log('ENTERED CREATEPOST!!!!!!!!!!', {
-      description,
-      xDistance,
-      yDistance,
-      zDistance,
-      height,
-      width,
-      privacy,
-    });
+    console.log('ENTERED CREATEPOST!!!!!!!!!!');
 
     const newPost = await this.props.client.mutate({
       mutation: POST_MUTATION,
@@ -118,15 +110,13 @@ class CreatePost extends Component {
           <Picker.Item label="Public" value={false} />
           <Picker.Item label="Private" value={true} />
         </Picker>
-        {/* <Mutation
-          mutation={POST_MUTATION}
-          variables={}
-        >
-          {postMutation => (
-            <Button title="Press me" color="#f194ff" onPress={postMutation} />
-          )}
-        </Mutation> */}
-        <Button title="Press me" color="#f194ff" onPress={this.createPost} />
+        <Button
+          title="Press me"
+          color="#f194ff"
+          onPress={() => {
+            this.createPost();
+          }}
+        />
       </View>
     );
   }
