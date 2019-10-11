@@ -1,11 +1,24 @@
 import React, { Component } from 'react';
 import { AUTH_TOKEN } from './constants';
-import { AsyncStorage, View, Text } from 'react-native';
+import { AsyncStorage, View, Text, TouchableOpacity } from 'react-native';
 import Welcome from './components/Welcome';
 import AllPosts from './components/AllPosts';
+import NewPost from './components/NewPost';
 import Login from './components/LogIn';
 
 import { ViroARSceneNavigator } from 'react-viro';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
+
+const FEED_QUERY = gql`
+  {
+    feed {
+      id
+      createdAt
+      description
+    }
+  }
+`;
 
 import { APP_SECRET } from './front_secrets';
 
@@ -13,7 +26,7 @@ let sharedProps = {
   apiKey: APP_SECRET,
 };
 
-let InitialARScene = require('./js/HelloWorldSceneAR');
+let InitialARScene = require('./components/HelloWorldSceneAR');
 
 export default class postAR extends Component {
   constructor() {
@@ -22,16 +35,46 @@ export default class postAR extends Component {
       sharedProps: sharedProps,
       currentView: 'login',
       user: null,
+      menu: false,
       token: '',
+      newPost: '',
+      newPostInd: false,
     };
     this.changeUserState = this.changeUserState.bind(this);
+    this.renderMenu = this.renderMenu.bind(this);
+    this.changeNewPostState = this.changeNewPostState.bind(this);
     this.setUserTokenAndView = this.setUserTokenAndView.bind(this);
     this.changeCurrentView = this.changeCurrentView.bind(this);
+    this.changeMenuState = this.changeMenuState.bind(this);
+    this.updateNewPost = this.updateNewPost.bind(this);
+  }
+
+  changeNewPostState() {
+    this.setState({ newPostInd: !this.state.newPostInd });
+  }
+
+  updateNewPost(post) {
+    this.setState({ newPost: post });
+  }
+
+  renderMenu() {
+    if (this.state.menu) {
+      return (
+        <TouchableOpacity onPress={this.changeNewPostState}>
+          <Text>CREATE NEW POST</Text>
+        </TouchableOpacity>
+      );
+    }
+  }
+
+  changeMenuState() {
+    this.setState({ menu: !this.state.menu });
   }
 
   changeUserState(userId) {
     this.setState({
       user: userId,
+      allPosts: [],
     });
   }
 
@@ -68,7 +111,7 @@ export default class postAR extends Component {
         />
       );
     }
-    if (this.state.currentView === 'allPosts') {
+    if (this.state.currentView === 'allPosts1') {
       return (
         <AllPosts
           changeCurrentView={this.changeCurrentView}
@@ -76,8 +119,46 @@ export default class postAR extends Component {
           setUserTokenAndView={this.setUserTokenAndView}
         />
       );
-    }
+    } else if (this.state.newPostInd) {
+      return (
+        <NewPost
+          changeNewPostState={this.changeNewPostState}
+          updateNewPost={this.updateNewPost}
+          changeMenuState={this.changeMenuState}
+        />
+      );
+    } else if (this.state.currentView === 'allPosts') {
+      return (
+        <View style={{ flex: 1 }}>
+          {/* <Query query={FEED_QUERY}>
+            {({ loading, error, data }) => {
+              if (loading) return <Text>Fetching</Text>;
+              if (error) return <Text>Error</Text>;
 
+              const postsToRender = data.feed;
+              console.log('posts ' + postsToRender);
+              // this.setState({ allPosts: postsToRender });
+              return <View>{postsToRender.map(post => null)}</View>;
+            }}
+          </Query> */}
+
+          {this.renderMenu()}
+          <ViroARSceneNavigator
+            apiKey={APP_SECRET}
+            initialScene={{ scene: InitialARScene }}
+            viroAppProps={{
+              changeMenuState: this.changeMenuState,
+              newPost: this.state.newPost,
+              allPosts: this.state.allPosts || [
+                { id: 1, description: 'hello 1' },
+                { id: 2, description: 'hello 2' },
+                { id: 3, description: 'hello 3' },
+              ],
+            }}
+          />
+        </View>
+      );
+    }
     //   if (this.state.currentView === 'login') {
     //     return (
     //       <ViroARSceneNavigator

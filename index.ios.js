@@ -6,7 +6,7 @@ import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
-import { AUTH_TOKEN } from './constants';
+import { AUTH_TOKEN, URI } from './constants';
 import { split } from 'apollo-link'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
@@ -20,6 +20,7 @@ const getToken = async () => {
     console.log(error)
   }
 }
+
 
 
 //adding token into Headers for Authorization purpose
@@ -39,8 +40,8 @@ const authLink = setContext(async (_, { headers }) => {
 
 // in order to test locally and debug with Viro, use uri with your IP address then :4000
 const httpLink = createHttpLink({
-  // uri: 'https://postit-server.herokuapp.com',
-  uri: 'http://172.16.23.176:4000',
+  uri: URI,
+  // uri: 'http://172.16.23.176:4000',
 });
 
 const wsLink = new WebSocketLink({
