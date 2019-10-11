@@ -17,23 +17,27 @@ import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 
+import { withApollo } from 'react-apollo';
+// import { client } from '../index.ios';
+import gql from 'graphql-tag';
+
 import { AUTH_TOKEN, URI } from '../constants';
 import { ShowPostsInAR } from './ShowPostsInAR';
 
-//adding token into Headers for Authorization purpose
-const authLink = setContext(async (_, { headers }) => {
-  try {
-    let token = await AsyncStorage.getItem(AUTH_TOKEN);
-    return {
-      headers: {
-        ...headers,
-        authorization: token ? `Bearer ${token}` : '',
-      },
-    };
-  } catch (error) {
-    console.log(error);
+// for querying gql
+// query for position (x,y,z)
+const FEED_QUERY = gql`
+  {
+    feed {
+      id
+      createdAt
+      description
+      xDistance
+      yDistance
+      zDistance
+    }
   }
-});
+`;
 
 class HelloWorldSceneAR extends Component {
   constructor() {
@@ -57,11 +61,26 @@ class HelloWorldSceneAR extends Component {
   }
 
   async componentDidMount() {
-    this.setState({
-      newPost: this.props.sceneNavigator.viroAppProps.newPost,
-      allPosts: this.props.sceneNavigator.viroAppProps.allPosts,
-    });
-    console.log('allposts ', this.props.sceneNavigator.viroAppProps.allPosts);
+    try {
+      //query from db
+      const { data } = await this.props.client.query({
+        query: FEED_QUERY,
+      });
+      console.log('data in componentdidmount:', data);
+      //set to local state
+      this.setState({
+        allPosts: data.feed,
+        newPost: this.props.sceneNavigator.viroAppProps.newPost, // this is just the text
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    // this.setState({
+    //   newPost: this.props.sceneNavigator.viroAppProps.newPost,
+    //   allPosts: this.props.sceneNavigator.viroAppProps.allPosts,
+    // });
+    // console.log('allposts ', this.props.sceneNavigator.viroAppProps.allPosts);
   }
 
   _onTap() {
@@ -91,8 +110,18 @@ class HelloWorldSceneAR extends Component {
         // console.log('new positions object is ' + allPost);
         // await AsyncStorage.setItem('posts', JSON.stringify(allPost));
         this.setState({
-          allPosts: [...allPosts, { id: ++i, description: this.state.newPost }],
+          allPosts: [
+            ...this.state.allPosts,
+            {
+              id: ++this.state.i,
+              description: this.state.newPost,
+              xDistance: this.state.dragPos[0],
+              yDistance: this.state.dragPos[1],
+              zDistance: this.state.dragPos[2],
+            },
+          ],
         });
+        //post to DB function here
       } catch (e) {
         console.log('pinAndSave error ' + e);
       }
@@ -111,7 +140,11 @@ class HelloWorldSceneAR extends Component {
     return (
       <ViroARScene
         anchorDetection={['PlanesVertical']}
-        onClick={this.props.sceneNavigator.viroAppProps.changeMenuState}
+        onClick={() => {
+          if (!this.state.planeVisibility) {
+            this.props.sceneNavigator.viroAppProps.changeMenuState();
+          }
+        }}
       >
         <ViroARImageMarker //looking for target to render the new world.  once found, the previous posts are posted
           target="target"
@@ -123,13 +156,14 @@ class HelloWorldSceneAR extends Component {
             height={0.3}
             width={0.3}
             rotation={[-90, 0, 0]}
-            position={[0, -0.5, 0]}
+            position={[0, 0.2, 0]}
             source={require('../js/res/tap.png')}
             visible={this.state.planeVisibility}
             opacity={0.5}
             onClick={this._onTap}
           />
           <ViroText //this is the new post. stays hidden till the tap button is tapped. draggable initially. then calls onClick, which pins and saves
+            style={{ color: '#258308' }}
             text={this.state.newPost}
             height={0.5}
             width={0.5}
@@ -140,7 +174,7 @@ class HelloWorldSceneAR extends Component {
             onClick={this.pinAndSave}
           />
           {this.state.allPosts.map(post => {
-            let posnArray = [0, 0, 0.1 * post.id];
+            let posnArray = [post.xDistance, 0, post.zDistance];
             console.log('post is ', post.description);
             return (
               <ViroText
@@ -156,5 +190,7 @@ class HelloWorldSceneAR extends Component {
     );
   }
 }
+
+export default withApollo(HelloWorldSceneAR);
 
 module.exports = HelloWorldSceneAR;

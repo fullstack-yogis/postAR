@@ -27,10 +27,12 @@ class AllPosts extends Component {
 
   async componentDidMount() {
     try {
+      //query from db
       const { data } = await client.query({
         query: FEED_QUERY,
       });
       console.log('data in componentdidmount:', data);
+      //set to local state
       this.setState({
         posts: data.feed,
       });
