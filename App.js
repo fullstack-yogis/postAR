@@ -3,6 +3,7 @@ import { AUTH_TOKEN } from './constants';
 import { AsyncStorage, View, Text, TouchableOpacity } from 'react-native';
 import Welcome from './components/Welcome';
 import AllPosts from './components/AllPosts';
+import NewPost from './components/NewPost';
 import Login from './components/LogIn';
 
 import { ViroARSceneNavigator } from 'react-viro';
@@ -44,9 +45,16 @@ export default class postAR extends Component {
     this.changeNewPostState = this.changeNewPostState.bind(this);
     this.setUserTokenAndView = this.setUserTokenAndView.bind(this);
     this.changeCurrentView = this.changeCurrentView.bind(this);
+    this.changeMenuState = this.changeMenuState.bind(this);
+    this.updateNewPost = this.updateNewPost.bind(this);
   }
+
   changeNewPostState() {
     this.setState({ newPostInd: !this.state.newPostInd });
+  }
+
+  updateNewPost(post) {
+    this.setState({ newPost: post });
   }
 
   renderMenu() {
@@ -57,6 +65,10 @@ export default class postAR extends Component {
         </TouchableOpacity>
       );
     }
+  }
+
+  changeMenuState() {
+    this.setState({ menu: !this.state.menu });
   }
 
   changeUserState(userId) {
@@ -107,8 +119,15 @@ export default class postAR extends Component {
           setUserTokenAndView={this.setUserTokenAndView}
         />
       );
-    }
-    if (this.state.currentView === 'allPosts') {
+    } else if (this.state.newPostInd) {
+      return (
+        <NewPost
+          changeNewPostState={this.changeNewPostState}
+          updateNewPost={this.updateNewPost}
+          changeMenuState={this.changeMenuState}
+        />
+      );
+    } else if (this.state.currentView === 'allPosts') {
       return (
         <View style={{ flex: 1 }}>
           {/* <Query query={FEED_QUERY}>
