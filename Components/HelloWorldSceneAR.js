@@ -17,8 +17,8 @@ import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 
-import { withApollo } from 'react-apollo';
-// import { client } from '../index.ios';
+// import { withApollo } from 'react-apollo';
+import { client } from '../index.ios';
 import gql from 'graphql-tag';
 
 import { AUTH_TOKEN, URI } from '../constants';
@@ -39,6 +39,39 @@ const FEED_QUERY = gql`
   }
 `;
 
+//for mutating gql
+const POST_MUTATION = gql`
+  mutation PostMutation(
+    $description: String!
+    $privacy: Boolean!
+    $xDistance: Float!
+    $yDistance: Float!
+    $zDistance: Float!
+    $height: Float!
+    $width: Float!
+  ) {
+    post(
+      description: $description
+      privacy: $privacy
+      xDistance: $xDistance
+      yDistance: $yDistance
+      zDistance: $zDistance
+      height: $height
+      width: $width
+    ) {
+      id
+      createdAt
+      privacy
+      xDistance
+      yDistance
+      zDistance
+      description
+      height
+      width
+    }
+  }
+`;
+
 class HelloWorldSceneAR extends Component {
   constructor() {
     super();
@@ -49,22 +82,24 @@ class HelloWorldSceneAR extends Component {
       imageVisibility: false,
       pauseUpdates: false,
       showText: 'hello there',
-      dragPos: [],
+      dragPos: [], // postition xyz
       dragAble: true,
       allPosts: [],
       i: 5,
-      newPost: '',
+      newPost: '', //description
     };
     this._onTap = this._onTap.bind(this);
     this._onDrag = this._onDrag.bind(this);
     this.pinAndSave = this.pinAndSave.bind(this);
+    this.createPost = this.createPost.bind(this);
   }
 
   async componentDidMount() {
     try {
       //query from db
-      const { data } = await this.props.client.query({
+      const { data } = await client.query({
         query: FEED_QUERY,
+        fetchPolicy: 'network-only',
       });
       console.log('data in componentdidmount:', data);
       //set to local state
@@ -91,7 +126,7 @@ class HelloWorldSceneAR extends Component {
   }
 
   _onDrag(d, source) {
-    console.log('position is ' + d[0] + ' ' + d[1] + ' ' + d[2]);
+    // console.log('position is ' + d[0] + ' ' + d[1] + ' ' + d[2]);
     this.setState({ dragPos: d });
   }
 
@@ -109,23 +144,41 @@ class HelloWorldSceneAR extends Component {
         // allPost.push(post);
         // console.log('new positions object is ' + allPost);
         // await AsyncStorage.setItem('posts', JSON.stringify(allPost));
-        this.setState({
-          allPosts: [
-            ...this.state.allPosts,
-            {
-              id: ++this.state.i,
-              description: this.state.newPost,
-              xDistance: this.state.dragPos[0],
-              yDistance: this.state.dragPos[1],
-              zDistance: this.state.dragPos[2],
-            },
-          ],
-        });
+
         //post to DB function here
+        let newPost = await this.createPost({
+          description: this.state.newPost,
+          privacy: false,
+          xDistance: this.state.dragPos[0],
+          yDistance: this.state.dragPos[1],
+          zDistance: this.state.dragPos[2],
+          height: 0.1,
+          width: 0.1,
+        });
+        console.log('new1 is ', newPost);
+        // this.setState({
+        //   allPosts: [...this.state.allPosts, newPost],
+        // });
       } catch (e) {
         console.log('pinAndSave error ' + e);
       }
       this.setState({ dragAble: false });
+    }
+  }
+
+  async createPost(post) {
+    try {
+      const { data } = await client.mutate({
+        mutation: POST_MUTATION,
+        variables: post,
+      });
+      console.log('data is ', data);
+      this.setState({
+        allPosts: [...this.state.allPosts, data.post],
+      });
+      return data.post;
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -156,7 +209,7 @@ class HelloWorldSceneAR extends Component {
             height={0.3}
             width={0.3}
             rotation={[-90, 0, 0]}
-            position={[0, 0.2, 0]}
+            position={[0, 0.3, 0]}
             source={require('../js/res/tap.png')}
             visible={this.state.planeVisibility}
             opacity={0.5}
@@ -168,14 +221,15 @@ class HelloWorldSceneAR extends Component {
             height={0.5}
             width={0.5}
             rotation={[-90, 0, 0]}
+            position={[0, 0.3, 0]}
             visible={this.state.imageVisibility}
             dragType="FixedToWorld"
             onDrag={this.state.dragAble ? this._onDrag : null}
             onClick={this.pinAndSave}
           />
           {this.state.allPosts.map(post => {
-            let posnArray = [post.xDistance, 0, post.zDistance];
-            console.log('post is ', post.description);
+            let posnArray = [post.xDistance, 0.2, post.zDistance];
+            // console.log('post is ', post.description);
             return (
               <ViroText
                 text={post.description}
@@ -191,6 +245,6 @@ class HelloWorldSceneAR extends Component {
   }
 }
 
-export default withApollo(HelloWorldSceneAR);
+// export default withApollo(HelloWorldSceneAR);
 
 module.exports = HelloWorldSceneAR;
