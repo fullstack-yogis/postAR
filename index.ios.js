@@ -7,11 +7,25 @@ import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 import { AUTH_TOKEN } from './constants';
+import { split } from 'apollo-link'
+import { WebSocketLink } from 'apollo-link-ws'
+import { getMainDefinition } from 'apollo-utilities'
+
+
+const getToken = async () => {
+  try {
+    let token = await AsyncStorage.getItem(AUTH_TOKEN);
+    return token
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 
 //adding token into Headers for Authorization purpose
 const authLink = setContext(async (_, { headers }) => {
   try {
-    let token = await AsyncStorage.getItem(AUTH_TOKEN);
+    let token = await getToken();
     return {
       headers: {
         ...headers,
@@ -23,15 +37,38 @@ const authLink = setContext(async (_, { headers }) => {
   }
 });
 
+// in order to test locally and debug with Viro, use uri with your IP address then :4000
 const httpLink = createHttpLink({
   // uri: 'https://postit-server.herokuapp.com',
   uri: 'http://172.16.23.176:4000',
 });
 
+const wsLink = new WebSocketLink({
+  uri: `ws://172.16.23.176:4000`,
+  options: {
+    reconnect: true,
+    connectionParams: {
+      authToken: getToken().then(token => {
+        return token
+      }).catch(err => console.error(err)),
+    }
+  }
+})
+
+const link = split(
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query)
+    console.log('kind', kind, 'operation', operation)
+    return kind === 'OperationDefinition' && operation === 'subscription'
+  },
+  wsLink,
+  authLink.concat(httpLink)
+)
+
 export const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-});
+  link,
+  cache: new InMemoryCache()
+})
 
 const App = () => (
   <ApolloProvider client={client}>
