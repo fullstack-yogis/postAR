@@ -155,45 +155,18 @@ class HelloWorldSceneAR extends Component {
       },
     });
     return (
-      <ViroARScene
-        anchorDetection={['PlanesVertical']}
-        onClick={() => {
-          if (!this.state.planeVisibility) {
-            this.props.sceneNavigator.viroAppProps.changeMenuState();
-          }
-        }}
-      >
+      <ViroARScene anchorDetection={['PlanesVertical']}>
         <ViroARImageMarker //looking for target to render the new world.  once found, the previous posts are posted
           target="target"
           pauseUpdates={this.state.pauseUpdates}
           onAnchorFound={() => {
             this.setState({ pauseUpdates: true });
             this.props.sceneNavigator.viroAppProps.changeCrosshairState();
+            this.props.sceneNavigator.viroAppProps.changeMenuState();
+            this.props.sceneNavigator.viroAppProps.toggleNmsg('LOOK_FOR_POST');
           }}
           // dragType="FixedToPlane"
         >
-          <ViroImage //this image appears over target once target detected. when tapped, the current post is placed and becomes draggable
-            height={0.3}
-            width={0.3}
-            rotation={[-90, 0, 0]}
-            position={[0, 0.3, 0]}
-            source={require('../js/res/tap.png')}
-            visible={this.state.planeVisibility}
-            opacity={0.5}
-            onClick={this._onTap}
-          />
-          <ViroText //this is the new post. stays hidden till the tap button is tapped. draggable initially. then calls onClick, which pins and saves
-            style={{ color: '#258308' }}
-            text={this.state.newPost}
-            height={0.5}
-            width={0.5}
-            rotation={[-90, 0, 0]}
-            position={[0, 0.3, 0]}
-            visible={this.state.imageVisibility}
-            dragType="FixedToWorld"
-            onDrag={this.state.dragAble ? this._onDrag : null}
-            onClick={this.pinAndSave}
-          />
           {this.state.allPosts.map(post => {
             let posnArray = [post.xDistance, 0.2, post.zDistance];
             // console.log('post is ', post.description);
