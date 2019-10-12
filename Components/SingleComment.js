@@ -13,6 +13,7 @@ class SingleComment extends Component {
   render() {
     return (
       <View style={{ marginTop: 25 }}>
+        <Text>{this.props.comment.user.name}:</Text>
         <Text>{this.props.comment.text}</Text>
       </View>
     );
