@@ -40,6 +40,7 @@ class AllPosts extends Component {
     this.state = {
       posts: [],
     };
+    this.updateFeed = this.updateFeed.bind(this)
   }
 
   async componentDidMount() {
@@ -49,7 +50,7 @@ class AllPosts extends Component {
         query: FEED_QUERY,
       });
       console.log('s2m----------', data)
-      // this._subscribeToNewPosts()
+      this._subscribeToNewPosts(this.updateFeed)
       this.setState({
         posts: data.feed,
       });
@@ -58,146 +59,66 @@ class AllPosts extends Component {
     }
   }
 
-  // subscribePlease() {
-  //   const { data, loading } = useSubscription(
-  //     NEW_POSTS_SUBSCRIPTION
-  //   );
-
-  //   console.log('=---------subscribe data', data)
-  //   // return <h4>New comment: {!loading && commentAdded.content}</h4>;
-  // }
-
-  async getFeed() {
-    try {
-      const { data }= await client.query({
-        query: FEED_QUERY,
-      });
-      this.setState({
-        posts: data.feed,
-      });
-    } catch (error) {
-      console.error(error);
-    }
+  updateFeed(newPosts) {
+    this.setState({
+      posts: newPosts
+    });
   }
 
-  // secondTry({ repoFullName }) {
-  //   const { data: { commentAdded }, loading } = useSubscription(
-  //     COMMENTS_SUBSCRIPTION,
-  //     { variables: { repoFullName } }
-  //   );
-  //   return <h4>New comment: {!loading && commentAdded.content}</h4>;
-  // }
-
-  _subscribeToNewPosts = () => {
+  _subscribeToNewPosts = (updateFeed) => {
     console.log('entered sub--------------------')
-    // client.subscribe({
-    //   query: NEW_POSTS_SUBSCRIPTION,
-    // },
-    // (err, result) => {
-    //   this.setState({
-    //     posts: [result]
-    //   })
-    //   console.log('err', err, '-------------result', result)
-    // })
-    let prevPosts = this.state.posts
-
 
     client.subscribe({
       query: NEW_POSTS_SUBSCRIPTION,
-      // updateQuery: (prev, {data}) => {
-              // if (!data.newPost) return prev
-              // const newPost = data.newPost
-              // const exists = prev.feed.posts.find(({ id }) => id === newPost.id);
-              // if (exists) return prev;
-              // console.log('newPost', newPost)
-            // console.log('--------data', data)
-            // },
     })
     .subscribe({
-      updateQuery: (prev, {data}) => {
-        return {
-          posts: [...prev.posts, data.newPost]
+      next({data}) {
+        const cacheData = client.cache.readQuery({query: FEED_QUERY})
+        console.log('cacheData?????', cacheData)
+        console.log('data??????', data.newPost)
+        const postAlreadyExists = cacheData.feed.find(post => {
+          post.id == data.newPost.id
+        })
+
+        if (!postAlreadyExists) {
+          client.cache.writeQuery({query: FEED_QUERY,
+          data: {...cacheData,
+              feed: [...cacheData.feed, data.newPost]
+          }
+        })
         }
-        // return Object.assign({}, prev, {
-        //   feed: {
-        //     posts: [newPost, ...prev.feed.post],
 
-        //   }
-        // })
-        console.log('--------data', data)
-      },
-    })
-    //   next(data) {
-    //     // const { data }= await client.query({
-    //     //   query: FEED_QUERY,
-    //     // });
-    //     updateQuery: (prev, data) => {
-    //       if (!data.newPost) return prev
-    //       const newPost = data.newPost
-    //       const exists = prev.feed.posts.find(({ id }) => id === newPost.id);
-    //       if (exists) return prev;
-    //       console.log('newPost', newPost)
-    //     console.log('--------data', data)
-    //     },
+        const newPosts = client.cache.readQuery({query: FEED_QUERY})
+        console.log('newCacheData?????', newPosts)
+        updateFeed(newPosts)
 
-        // return data.newPost
-
-        // this.setState({
-        //   posts: [...prevPosts, data.newPost]
-        // })
-
-    //   error(err) {
-    //     console.error(err)
-    //   }
-    // })
-
-
-    // this.setState({
-    //   posts: [...prevPosts, newPost]
-    // })
-
-    // client.subscribe({
-    //   document: NEW_POSTS_SUBSCRIPTION,
-    //   updateQuery: (prev, { subscriptionData }) => {
-    //     const newPost = subscriptionData.data.newPost
-    //     console.log('newpost=------------', newPost)
-
-    //     if (!subscriptionData.data) return prev
-    //     const newLink = subscriptionData.data.newLink
-    //     const exists = prev.feed.links.find(({ id }) => id === newLink.id);
-    //     if (exists) return prev;
-
-    //     return Object.assign({}, prev, {
-    //       feed: {
-    //         links: [newLink, ...prev.feed.links],
-    //         count: prev.feed.links.length + 1,
-    //         __typename: prev.feed.__typename
-    //       }
-    //     })
-    //   }
-    // })
+      }})
   }
 
   render() {
+    // console.log('client cache----------------', client.cache.data.data.ROOT_QUERY)
+    if (client.cache.data.data.ROOT_QUERY) {
+      console.log('client cache----------------', client.readQuery({
+        query: FEED_QUERY
+      }))
+    }
+
     return (
       <View>
-        <Subscription
-          subscription={NEW_POSTS_SUBSCRIPTION}
-          onError={err => console.log(err)}
-          onCompleted={data => console.log(data)}
-        >
-          {() => {
-            this.setState({
-              posts: data
-            })
-            // return <Text>Current list of friends in your party : </Text>;
-          }}
-        </Subscription>
         <View>
+          {client.cache.data.data.ROOT_QUERY
+          ? client.readQuery({
+            query: FEED_QUERY
+          }).feed.map(post => (
+            <SinglePost key={post.id} post={post} />
+          ))
+          : null }
+        </View>
+        {/* <View>
           {this.state.posts.map(post => (
             <SinglePost key={post.id} post={post} />
           ))}
-        </View>
+        </View> */}
         <CreatePost />
       </View>
     );
