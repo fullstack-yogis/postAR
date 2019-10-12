@@ -14,6 +14,14 @@ const FEED_QUERY = gql`
       id
       createdAt
       description
+      comments {
+        id
+        text
+        createdAt
+        user {
+          name
+        }
+      }
     }
   }
 `;
@@ -32,7 +40,7 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       width
     }
   }
-`
+`;
 
 class AllPosts extends Component {
   constructor() {
@@ -40,17 +48,17 @@ class AllPosts extends Component {
     this.state = {
       posts: [],
     };
-    this.updateFeed = this.updateFeed.bind(this)
+    this.updateFeed = this.updateFeed.bind(this);
   }
 
   async componentDidMount() {
     try {
-      console.log('--------here-----------')
-      const { data }= await client.query({
+      console.log('--------here-----------');
+      const { data } = await client.query({
         query: FEED_QUERY,
       });
-      console.log('s2m----------', data)
-      this._subscribeToNewPosts(this.updateFeed)
+      console.log('s2m----------', data);
+      this._subscribeToNewPosts(this.updateFeed);
       this.setState({
         posts: data.feed,
       });
@@ -60,41 +68,42 @@ class AllPosts extends Component {
   }
 
   updateFeed(newPost) {
-    let prevPosts = this.state.posts
+    let prevPosts = this.state.posts;
     this.setState({
-      posts: [...prevPosts, newPost]
+      posts: [...prevPosts, newPost],
     });
   }
 
-  _subscribeToNewPosts = (updateFeed) => {
-    console.log('entered sub--------------------')
+  _subscribeToNewPosts = updateFeed => {
+    console.log('entered sub--------------------');
 
-    client.subscribe({
-      query: NEW_POSTS_SUBSCRIPTION,
-    })
-    .subscribe({
-      next({data}) {
-        updateFeed(data.newPost)
-        // const cacheData = client.cache.readQuery({query: FEED_QUERY})
-        // console.log('cacheData?????', cacheData)
-        // console.log('data??????', data.newPost)
-        // const postAlreadyExists = cacheData.feed.find(post => {
-        //   post.id == data.newPost.id
-        // })
+    client
+      .subscribe({
+        query: NEW_POSTS_SUBSCRIPTION,
+      })
+      .subscribe({
+        next({ data }) {
+          updateFeed(data.newPost);
+          // const cacheData = client.cache.readQuery({query: FEED_QUERY})
+          // console.log('cacheData?????', cacheData)
+          // console.log('data??????', data.newPost)
+          // const postAlreadyExists = cacheData.feed.find(post => {
+          //   post.id == data.newPost.id
+          // })
 
-        // if (!postAlreadyExists) {
-        //   client.cache.writeQuery({query: FEED_QUERY,
-        //   data: {...cacheData,
-        //       feed: [...cacheData.feed, data.newPost]
-        //   }
-        // })
-        // }
+          // if (!postAlreadyExists) {
+          //   client.cache.writeQuery({query: FEED_QUERY,
+          //   data: {...cacheData,
+          //       feed: [...cacheData.feed, data.newPost]
+          //   }
+          // })
+          // }
 
-        // const newPosts = client.cache.readQuery({query: FEED_QUERY})
-        // console.log('newCacheData?????', newPosts)
-
-      }})
-  }
+          // const newPosts = client.cache.readQuery({query: FEED_QUERY})
+          // console.log('newCacheData?????', newPosts)
+        },
+      });
+  };
 
   render() {
     // console.log('client cache----------------', client.cache.data.data.ROOT_QUERY)
