@@ -59,9 +59,10 @@ class AllPosts extends Component {
     }
   }
 
-  updateFeed(newPosts) {
+  updateFeed(newPost) {
+    let prevPosts = this.state.posts
     this.setState({
-      posts: newPosts
+      posts: [...prevPosts, newPost]
     });
   }
 
@@ -73,52 +74,52 @@ class AllPosts extends Component {
     })
     .subscribe({
       next({data}) {
-        const cacheData = client.cache.readQuery({query: FEED_QUERY})
-        console.log('cacheData?????', cacheData)
-        console.log('data??????', data.newPost)
-        const postAlreadyExists = cacheData.feed.find(post => {
-          post.id == data.newPost.id
-        })
+        updateFeed(data.newPost)
+        // const cacheData = client.cache.readQuery({query: FEED_QUERY})
+        // console.log('cacheData?????', cacheData)
+        // console.log('data??????', data.newPost)
+        // const postAlreadyExists = cacheData.feed.find(post => {
+        //   post.id == data.newPost.id
+        // })
 
-        if (!postAlreadyExists) {
-          client.cache.writeQuery({query: FEED_QUERY,
-          data: {...cacheData,
-              feed: [...cacheData.feed, data.newPost]
-          }
-        })
-        }
+        // if (!postAlreadyExists) {
+        //   client.cache.writeQuery({query: FEED_QUERY,
+        //   data: {...cacheData,
+        //       feed: [...cacheData.feed, data.newPost]
+        //   }
+        // })
+        // }
 
-        const newPosts = client.cache.readQuery({query: FEED_QUERY})
-        console.log('newCacheData?????', newPosts)
-        updateFeed(newPosts)
+        // const newPosts = client.cache.readQuery({query: FEED_QUERY})
+        // console.log('newCacheData?????', newPosts)
 
       }})
   }
 
   render() {
     // console.log('client cache----------------', client.cache.data.data.ROOT_QUERY)
-    if (client.cache.data.data.ROOT_QUERY) {
-      console.log('client cache----------------', client.readQuery({
-        query: FEED_QUERY
-      }))
-    }
+    // if (client.cache.data.data.ROOT_QUERY) {
+    //   console.log('client cache----------------', client.readQuery({
+    //     query: FEED_QUERY
+    //   }))
+    // }
 
     return (
       <View>
         <View>
-          {client.cache.data.data.ROOT_QUERY
+          {/* {client.cache.data.data.ROOT_QUERY
           ? client.readQuery({
             query: FEED_QUERY
           }).feed.map(post => (
             <SinglePost key={post.id} post={post} />
           ))
-          : null }
+          : null } */}
         </View>
-        {/* <View>
+        <View>
           {this.state.posts.map(post => (
             <SinglePost key={post.id} post={post} />
           ))}
-        </View> */}
+        </View>
         <CreatePost />
       </View>
     );
