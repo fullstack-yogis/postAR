@@ -61,6 +61,23 @@ const POST_MUTATION = gql`
   }
 `;
 
+//subscription query
+const NEW_POSTS_SUBSCRIPTION = gql`
+  subscription {
+    newPost {
+      id
+      createdAt
+      privacy
+      xDistance
+      yDistance
+      zDistance
+      description
+      height
+      width
+    }
+  }
+`;
+
 class HelloWorldSceneAR extends Component {
   constructor() {
     super();
@@ -77,6 +94,8 @@ class HelloWorldSceneAR extends Component {
     this._onDrag = this._onDrag.bind(this);
     this.pinAndSave = this.pinAndSave.bind(this);
     this.createPost = this.createPost.bind(this);
+    this.updateFeed = this.updateFeed.bind(this);
+    this._subscribeToNewPosts = this._subscribeToNewPosts.bind(this);
   }
 
   async componentDidMount() {
@@ -86,15 +105,38 @@ class HelloWorldSceneAR extends Component {
         query: FEED_QUERY,
         fetchPolicy: 'network-only',
       });
-      console.log('data in componentdidmount:', data);
       //set to local state
       this.setState({
         allPosts: data.feed,
         newPost: this.props.sceneNavigator.viroAppProps.newPostText,
       });
+
+      //register subscription
+      this._subscribeToNewPosts(this.updateFeed);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  //update allPosts with a new post
+  updateFeed(newPost) {
+    let prevPosts = this.state.allPosts;
+    this.setState({
+      allPosts: [...prevPosts, newPost],
+    });
+  }
+
+  //subscription method
+  _subscribeToNewPosts(updateFeed) {
+    client
+      .subscribe({
+        query: NEW_POSTS_SUBSCRIPTION,
+      })
+      .subscribe({
+        next({ data }) {
+          updateFeed(data.newPost);
+        },
+      });
   }
 
   _onTap() {
