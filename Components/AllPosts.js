@@ -53,11 +53,9 @@ class AllPosts extends Component {
 
   async componentDidMount() {
     try {
-      console.log('--------here-----------');
       const { data } = await client.query({
         query: FEED_QUERY,
       });
-      console.log('s2m----------', data);
       this._subscribeToNewPosts(this.updateFeed);
       this.setState({
         posts: data.feed,
@@ -75,8 +73,6 @@ class AllPosts extends Component {
   }
 
   _subscribeToNewPosts = updateFeed => {
-    console.log('entered sub--------------------');
-
     client
       .subscribe({
         query: NEW_POSTS_SUBSCRIPTION,
@@ -84,46 +80,13 @@ class AllPosts extends Component {
       .subscribe({
         next({ data }) {
           updateFeed(data.newPost);
-          // const cacheData = client.cache.readQuery({query: FEED_QUERY})
-          // console.log('cacheData?????', cacheData)
-          // console.log('data??????', data.newPost)
-          // const postAlreadyExists = cacheData.feed.find(post => {
-          //   post.id == data.newPost.id
-          // })
-
-          // if (!postAlreadyExists) {
-          //   client.cache.writeQuery({query: FEED_QUERY,
-          //   data: {...cacheData,
-          //       feed: [...cacheData.feed, data.newPost]
-          //   }
-          // })
-          // }
-
-          // const newPosts = client.cache.readQuery({query: FEED_QUERY})
-          // console.log('newCacheData?????', newPosts)
         },
       });
   };
 
   render() {
-    // console.log('client cache----------------', client.cache.data.data.ROOT_QUERY)
-    // if (client.cache.data.data.ROOT_QUERY) {
-    //   console.log('client cache----------------', client.readQuery({
-    //     query: FEED_QUERY
-    //   }))
-    // }
-
     return (
       <View>
-        <View>
-          {/* {client.cache.data.data.ROOT_QUERY
-          ? client.readQuery({
-            query: FEED_QUERY
-          }).feed.map(post => (
-            <SinglePost key={post.id} post={post} />
-          ))
-          : null } */}
-        </View>
         <View>
           {this.state.posts.map(post => (
             <SinglePost key={post.id} post={post} />

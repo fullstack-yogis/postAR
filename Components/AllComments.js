@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import {
-  DatePickerIOS,
   Modal,
   TextInput,
   View,
   TouchableHighlight,
   Image,
   StyleSheet,
-  TouchableOpacity,
   Text,
   Button,
 } from 'react-native';
 import SingleComment from './SingleComment';
 import { client } from '../index.ios';
+import CreateComments from './CreateComments';
+
 import gql from 'graphql-tag';
 
 const COMMENT_MUTATION = gql`
@@ -27,13 +27,49 @@ const COMMENT_MUTATION = gql`
   }
 `;
 
-export default class AddComments extends Component {
+const NEW_COMMENTS_SUBSCRIPTION = gql`
+  subscription {
+    newComment {
+      id
+      text
+      user {
+        name
+      }
+    }
+  }
+`;
+
+export default class AllComments extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
+      comments: this.props.post.comments ? this.props.post.comments : [],
     };
+    this.updateFeed = this.updateFeed.bind(this);
   }
+
+  componentDidMount() {
+    this._subscribeToNewComments(this.updateFeed);
+  }
+  updateFeed(newComment) {
+    let prevComments = this.state.comments;
+    this.setState({
+      comments: [...prevComments, newComment],
+    });
+  }
+  _subscribeToNewComments = updateFeed => {
+    console.log('entered comments sub--------------------');
+    client
+      .subscribe({
+        query: NEW_COMMENTS_SUBSCRIPTION,
+      })
+      .subscribe({
+        next({ data }) {
+          console.log('data received from subscribe', data);
+          updateFeed(data.newComment);
+        },
+      });
+  };
 
   async addComment(postId) {
     await client.mutate({
@@ -75,25 +111,12 @@ export default class AddComments extends Component {
           </View>
           <View>
             <Text style={styles.input}>Comments</Text>
-            {this.props.post.comments.map(comment => {
+            {this.state.comments.map(comment => {
               return <SingleComment comment={comment} key={comment.id} />;
             })}
           </View>
 
-          <TextInput
-            multiline={true}
-            numberOfLines={4}
-            onChangeText={text => this.setState({ text })}
-            placeholder="Add your comments here..."
-            value={this.state.text}
-            style={styles.input}
-          />
-          <Button
-            title="Add Comments"
-            onPress={() => {
-              this.addComment(this.props.post.id);
-            }}
-          />
+          <CreateComments post={this.props.post} />
         </View>
       </Modal>
     );

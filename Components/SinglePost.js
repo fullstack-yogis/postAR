@@ -8,7 +8,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import AddComments from './AddComment';
+import AllComments from './AllComments';
 
 class SinglePost extends Component {
   constructor() {
@@ -31,7 +31,7 @@ class SinglePost extends Component {
           >
             <Text>{this.props.post.description}</Text>
           </TouchableOpacity>
-          <AddComments
+          <AllComments
             post={this.props.post}
             isModalVisible={this.state.isModalVisible}
             closeModal={() => this.closeModal()}
