@@ -3,9 +3,10 @@ import { Text, View } from 'react-native';
 import SinglePost from './SinglePost';
 import CreatePost from './CreatePost';
 import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
+import { withApollo, Subscription } from 'react-apollo';
 import { specifiedRules } from 'graphql';
 import { client } from '../index.ios';
+import { useSubscription } from '@apollo/react-hooks';
 
 const FEED_QUERY = gql`
   {
@@ -17,22 +18,39 @@ const FEED_QUERY = gql`
   }
 `;
 
+const NEW_POSTS_SUBSCRIPTION = gql`
+  subscription {
+    newPost {
+      id
+      createdAt
+      privacy
+      xDistance
+      yDistance
+      zDistance
+      description
+      height
+      width
+    }
+  }
+`
+
 class AllPosts extends Component {
   constructor() {
     super();
     this.state = {
       posts: [],
     };
+    this.updateFeed = this.updateFeed.bind(this)
   }
 
   async componentDidMount() {
     try {
-      //query from db
-      const { data } = await client.query({
+      console.log('--------here-----------')
+      const { data }= await client.query({
         query: FEED_QUERY,
       });
-      console.log('data in componentdidmount:', data);
-      //set to local state
+      console.log('s2m----------', data)
+      this._subscribeToNewPosts(this.updateFeed)
       this.setState({
         posts: data.feed,
       });
@@ -41,25 +59,62 @@ class AllPosts extends Component {
     }
   }
 
+  updateFeed(newPost) {
+    let prevPosts = this.state.posts
+    this.setState({
+      posts: [...prevPosts, newPost]
+    });
+  }
+
+  _subscribeToNewPosts = (updateFeed) => {
+    console.log('entered sub--------------------')
+
+    client.subscribe({
+      query: NEW_POSTS_SUBSCRIPTION,
+    })
+    .subscribe({
+      next({data}) {
+        updateFeed(data.newPost)
+        // const cacheData = client.cache.readQuery({query: FEED_QUERY})
+        // console.log('cacheData?????', cacheData)
+        // console.log('data??????', data.newPost)
+        // const postAlreadyExists = cacheData.feed.find(post => {
+        //   post.id == data.newPost.id
+        // })
+
+        // if (!postAlreadyExists) {
+        //   client.cache.writeQuery({query: FEED_QUERY,
+        //   data: {...cacheData,
+        //       feed: [...cacheData.feed, data.newPost]
+        //   }
+        // })
+        // }
+
+        // const newPosts = client.cache.readQuery({query: FEED_QUERY})
+        // console.log('newCacheData?????', newPosts)
+
+      }})
+  }
+
   render() {
+    // console.log('client cache----------------', client.cache.data.data.ROOT_QUERY)
+    // if (client.cache.data.data.ROOT_QUERY) {
+    //   console.log('client cache----------------', client.readQuery({
+    //     query: FEED_QUERY
+    //   }))
+    // }
+
     return (
       <View>
-        {/* <Query query={FEED_QUERY}>
-          {({ loading, error, data }) => {
-            if (loading) return <Text>Fetching</Text>;
-            if (error) return <Text>Error</Text>;
-
-            const postsToRender = data.feed;
-
-            return (
-              <View>
-                {postsToRender.map(post => (
-                  <SinglePost key={post.id} post={post} />
-                ))}
-              </View>
-            );
-          }}
-        </Query> */}
+        <View>
+          {/* {client.cache.data.data.ROOT_QUERY
+          ? client.readQuery({
+            query: FEED_QUERY
+          }).feed.map(post => (
+            <SinglePost key={post.id} post={post} />
+          ))
+          : null } */}
+        </View>
         <View>
           {this.state.posts.map(post => (
             <SinglePost key={post.id} post={post} />
