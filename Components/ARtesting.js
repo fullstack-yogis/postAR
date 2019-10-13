@@ -250,6 +250,9 @@ class HelloWorldSceneAR extends Component {
                 key={post.id}
                 rotation={[-90, 0, 0]}
                 position={posnArray}
+                onClick={
+                  this.props.sceneNavigator.viroAppProps.toggleCreateComments
+                }
               />
             );
           })}

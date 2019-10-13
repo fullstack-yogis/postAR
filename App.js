@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import NewPost from './components/NewPost';
 import Login from './components/LogIn';
+import CreateComments from './components/CreateComments';
 
 import { ViroARSceneNavigator } from 'react-viro';
 
@@ -37,6 +38,7 @@ export default class postAR extends Component {
       newPostInd: false,
       accessAR: true,
       createPost: false,
+      createComments: false,
     };
     this.changeNewPostState = this.changeNewPostState.bind(this);
     this.updateNewPostText = this.updateNewPostText.bind(this);
@@ -51,6 +53,7 @@ export default class postAR extends Component {
     this.toggleCreatePost = this.toggleCreatePost.bind(this);
     this.turnOffCreatePost = this.turnOffCreatePost.bind(this);
     this.resetNewPostText = this.resetNewPostText.bind(this);
+    this.toggleCreateComments = this.toggleCreateComments.bind(this);
   }
 
   // toggle create NewPost page state
@@ -151,6 +154,7 @@ export default class postAR extends Component {
             changeCrosshairState: this.changeCrosshairState,
             newPostText: this.state.newPostText,
             resetNewPostText: this.resetNewPostText,
+            toggleCreateComments: this.toggleCreateComments,
           }}
         />
       );
@@ -179,6 +183,18 @@ export default class postAR extends Component {
   // minimizes create post component (meant for home button)
   turnOffCreatePost() {
     this.setState({ createPost: false });
+  }
+
+  // render create comment
+  renderCreateComments() {
+    if (this.state.createComments) {
+      return <CreateComments />;
+    }
+  }
+
+  // toggle create comment component
+  toggleCreateComments() {
+    this.setState({ createComments: !this.state.createComments });
   }
 
   //change token on state to reflect the current user's token once logged in
@@ -224,6 +240,7 @@ export default class postAR extends Component {
           {this.renderNotification()}
           {this.renderAR()}
           {this.renderCreatePost()}
+          {this.renderCreateComments()}
           {this.renderCrosshair()}
           {this.renderMenu()}
         </View>
