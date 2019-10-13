@@ -48,8 +48,8 @@ export default class postAR extends Component {
     this.renderCrosshair = this.renderCrosshair.bind(this);
     this.setUserTokenAndView = this.setUserTokenAndView.bind(this);
     this.changeCurrentView = this.changeCurrentView.bind(this);
-
     this.toggleCreatePost = this.toggleCreatePost.bind(this);
+    this.resetNewPostText = this.resetNewPostText.bind(this);
   }
 
   // toggle create NewPost page state
@@ -60,6 +60,11 @@ export default class postAR extends Component {
   // get the new post text (description)
   updateNewPostText(text) {
     this.setState({ newPostText: text });
+  }
+
+  // reset new post text to ''
+  resetNewPostText() {
+    this.setState({ newPostText: '' });
   }
 
   // toggle create NewPost page
@@ -138,6 +143,7 @@ export default class postAR extends Component {
             toggleNmsg: this.toggleNmsg,
             changeCrosshairState: this.changeCrosshairState,
             newPostText: this.state.newPostText,
+            resetNewPostText: this.resetNewPostText,
           }}
         />
       );

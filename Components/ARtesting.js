@@ -158,7 +158,7 @@ class HelloWorldSceneAR extends Component {
       try {
         //post to DB function here
         let newPost = await this.createPost({
-          description: this.state.newPost,
+          description: this.props.sceneNavigator.viroAppProps.newPostText,
           privacy: false,
           xDistance: this.state.dragPos[0],
           yDistance: this.state.dragPos[1],
@@ -167,10 +167,19 @@ class HelloWorldSceneAR extends Component {
           width: 0.1,
         });
         console.log('new1 is ', newPost);
+        console.log(
+          'bfore',
+          this.props.sceneNavigator.viroAppProps.newPostText
+        );
+        this.props.sceneNavigator.viroAppProps.resetNewPostText();
+        console.log(
+          'after',
+          this.props.sceneNavigator.viroAppProps.newPostText
+        );
+        this.setState({ dragAble: false });
       } catch (e) {
         console.log('pinAndSave error ' + e);
       }
-      this.setState({ dragAble: false });
     }
   }
 
