@@ -17,12 +17,10 @@ const POST_DELETE_MUTATION = gql`
     deletePost(id: $id) {
       id
       description
-      comments {
-        text
-      }
     }
   }
 `;
+
 class SinglePost extends Component {
   constructor() {
     super();
