@@ -8,7 +8,7 @@ import {
   Picker,
   Button,
 } from 'react-native';
-import { Mutation } from 'react-apollo';
+import { Mutation, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 
 const POST_MUTATION = gql`
@@ -57,16 +57,30 @@ class CreatePost extends Component {
     };
   }
 
+  async createPost() {
+    await this.props.client.mutate({
+      mutation: POST_MUTATION,
+      variables: {
+        description: this.state.description,
+        privacy: this.state.privacy,
+        xDistance: this.state.xDistance,
+        yDistance: this.state.yDistance,
+        zDistance: this.state.zDistance,
+        height: this.state.height,
+        width: this.state.width,
+      },
+    });
+    this.setState({
+      description: '',
+      privacy: false,
+      xDistance: 15.5,
+      yDistance: 20.5,
+      zDistance: -10.5,
+      height: 1.0,
+      width: 1.0,
+    });
+  }
   render() {
-    const {
-      description,
-      xDistance,
-      yDistance,
-      zDistance,
-      height,
-      width,
-      privacy,
-    } = this.state;
     return (
       <View>
         <TextInput
@@ -84,28 +98,19 @@ class CreatePost extends Component {
           <Picker.Item label="Public" value={false} />
           <Picker.Item label="Private" value={true} />
         </Picker>
-        <Mutation
-          mutation={POST_MUTATION}
-          variables={{
-            description,
-            privacy,
-            xDistance,
-            yDistance,
-            zDistance,
-            height,
-            width,
+        <Button
+          title="Press me"
+          color="#f194ff"
+          onPress={() => {
+            this.createPost();
           }}
-        >
-          {postMutation => (
-            <Button title="Press me" color="#f194ff" onPress={postMutation} />
-          )}
-        </Mutation>
+        />
       </View>
     );
   }
 }
 
-export default CreatePost;
+export default withApollo(CreatePost);
 
 const styles = StyleSheet.create({
   container: {

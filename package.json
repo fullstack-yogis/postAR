@@ -14,12 +14,14 @@
     "apollo-client": "^2.6.4",
     "apollo-fetch": "^0.7.0",
     "apollo-link-context": "^1.0.19",
+    "apollo-link-ws": "^1.0.19",
     "graphql": "^14.5.8",
     "react": "16.8.3",
     "react-apollo": "^3.1.2",
     "react-native": "0.59.3",
     "react-viro": "2.16.0",
-    "redux": "^4.0.4"
+    "redux": "^4.0.4",
+    "subscriptions-transport-ws": "^0.9.16"
   },
   "devDependencies": {
     "@babel/core": "7.6.2",
