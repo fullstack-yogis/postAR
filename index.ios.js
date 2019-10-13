@@ -7,21 +7,18 @@ import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 import { AUTH_TOKEN, URI } from './constants';
-import { split } from 'apollo-link'
-import { WebSocketLink } from 'apollo-link-ws'
-import { getMainDefinition } from 'apollo-utilities'
-
+import { split } from 'apollo-link';
+import { WebSocketLink } from 'apollo-link-ws';
+import { getMainDefinition } from 'apollo-utilities';
 
 const getToken = async () => {
   try {
     let token = await AsyncStorage.getItem(AUTH_TOKEN);
-    return token
+    return token;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
-
+};
 
 //adding token into Headers for Authorization purpose
 const authLink = setContext(async (_, { headers }) => {
@@ -40,38 +37,41 @@ const authLink = setContext(async (_, { headers }) => {
 
 // in order to test locally and debug with Viro, use uri with your IP address then :4000
 const httpLink = createHttpLink({
-  // uri: URI,
+  uri: URI,
   // uri: 'http://172.16.23.176:4000',
-  uri: 'http://192.168.0.27:4000',
+  // uri: 'http://192.168.0.27:4000',
 });
 
 const wsLink = new WebSocketLink({
+  uri: URI,
   // uri: `ws://172.16.23.176:4000`,
-  uri: 'http://192.168.0.27:4000',
+  // uri: 'http://192.168.0.27:4000',
   options: {
     reconnect: true,
     connectionParams: {
-      authToken: getToken().then(token => {
-        return token
-      }).catch(err => console.error(err)),
-    }
-  }
-})
+      authToken: getToken()
+        .then(token => {
+          return token;
+        })
+        .catch(err => console.error(err)),
+    },
+  },
+});
 
 const link = split(
   ({ query }) => {
-    const { kind, operation } = getMainDefinition(query)
-    console.log('kind', kind, 'operation', operation)
-    return kind === 'OperationDefinition' && operation === 'subscription'
+    const { kind, operation } = getMainDefinition(query);
+    console.log('kind', kind, 'operation', operation);
+    return kind === 'OperationDefinition' && operation === 'subscription';
   },
   wsLink,
   authLink.concat(httpLink)
-)
+);
 
 export const client = new ApolloClient({
   link,
-  cache: new InMemoryCache()
-})
+  cache: new InMemoryCache(),
+});
 
 const App = () => (
   <ApolloProvider client={client}>
