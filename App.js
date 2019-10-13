@@ -1,81 +1,167 @@
 import React, { Component } from 'react';
 import { AUTH_TOKEN } from './constants';
-import { AsyncStorage, View, Text, TouchableOpacity } from 'react-native';
-import Welcome from './components/Welcome';
-import AllPosts from './components/AllPosts';
+import {
+  AsyncStorage,
+  View,
+  Button,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import NewPost from './components/NewPost';
 import Login from './components/LogIn';
 
 import { ViroARSceneNavigator } from 'react-viro';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
-
-const FEED_QUERY = gql`
-  {
-    feed {
-      id
-      createdAt
-      description
-    }
-  }
-`;
 
 import { APP_SECRET } from './front_secrets';
+import { getMarkupFromTree } from 'react-apollo';
 
 let sharedProps = {
   apiKey: APP_SECRET,
 };
 
-let InitialARScene = require('./components/HelloWorldSceneAR');
+// let InitialARScene = require('./components/HelloWorldSceneAR');
+let InitialARScene = require('./components/ARtesting');
 
 export default class postAR extends Component {
   constructor() {
     super();
     this.state = {
-      sharedProps: sharedProps,
+      sharedProps: sharedProps, //api key
       currentView: 'login',
-      user: null,
-      menu: false,
       token: '',
-      newPost: '',
+      notification: true,
+      notificationCase: 'SCAN_MARKER',
+      menu: false,
+      newPostText: '',
       newPostInd: false,
+      accessAR: true,
+      createPost: false,
     };
-    this.changeUserState = this.changeUserState.bind(this);
-    this.renderMenu = this.renderMenu.bind(this);
     this.changeNewPostState = this.changeNewPostState.bind(this);
+    this.updateNewPostText = this.updateNewPostText.bind(this);
+    this.renderNotification = this.renderNotification.bind(this);
+    this.toggleNmsg = this.toggleNmsg.bind(this);
+    this.changeMenuState = this.changeMenuState.bind(this);
+    this.renderMenu = this.renderMenu.bind(this);
+    this.changeCrosshairState = this.changeCrosshairState.bind(this);
+    this.renderCrosshair = this.renderCrosshair.bind(this);
     this.setUserTokenAndView = this.setUserTokenAndView.bind(this);
     this.changeCurrentView = this.changeCurrentView.bind(this);
-    this.changeMenuState = this.changeMenuState.bind(this);
-    this.updateNewPost = this.updateNewPost.bind(this);
+
+    this.toggleCreatePost = this.toggleCreatePost.bind(this);
   }
 
+  // toggle create NewPost page state
   changeNewPostState() {
     this.setState({ newPostInd: !this.state.newPostInd });
   }
 
-  updateNewPost(post) {
-    this.setState({ newPost: post });
+  // get the new post text (description)
+  updateNewPostText(text) {
+    this.setState({ newPostText: text });
   }
 
+  // toggle create NewPost page
   renderMenu() {
     if (this.state.menu) {
       return (
-        <TouchableOpacity onPress={this.changeNewPostState}>
-          <Text>CREATE NEW POST</Text>
-        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            backgroundColor: 'black',
+            padding: 8,
+            paddingBottom: 30,
+          }}
+        >
+          <Button
+            title="POST"
+            onPress={this.toggleCreatePost}
+            style={{ color: 'white' }}
+          />
+          <Button
+            title="HOME"
+            style={{ color: 'white' }}
+            onPress={this.toggleCreatePost}
+          />
+          <Button title="ACCOUNT" style={{ color: 'white' }} />
+        </View>
       );
     }
   }
 
+  // toggle create new post menu (on top of screen)
   changeMenuState() {
     this.setState({ menu: !this.state.menu });
   }
 
-  changeUserState(userId) {
-    this.setState({
-      user: userId,
-      allPosts: [],
-    });
+  // renders crosshair
+  renderCrosshair() {
+    if (this.state.crosshair) {
+      return <View style={styles.crosshair} />;
+    }
+  }
+
+  // toggles crosshair state (off after finding marker)
+  changeCrosshairState() {
+    this.setState({ crosshair: false });
+  }
+
+  // render notification
+  renderNotification() {
+    if (this.state.notification) {
+      switch (this.state.notificationCase) {
+        case 'SCAN_MARKER':
+          return <Text style={styles.notification}>HOVER OVER MARKER</Text>;
+        case 'LOOK_FOR_POST':
+          return <Text style={styles.notification}>LOOK AROUND FOR POST</Text>;
+        default:
+          return <Text style={styles.notification} />;
+      }
+    }
+  }
+
+  // change Notification message
+  toggleNmsg(nCase) {
+    this.setState({ notificationCase: nCase });
+  }
+
+  renderAR() {
+    if (this.state.accessAR) {
+      return (
+        <ViroARSceneNavigator
+          apiKey={APP_SECRET}
+          initialScene={{ scene: InitialARScene }}
+          viroAppProps={{
+            changeMenuState: this.changeMenuState,
+            toggleNmsg: this.toggleNmsg,
+            changeCrosshairState: this.changeCrosshairState,
+            newPostText: this.state.newPostText,
+          }}
+        />
+      );
+    }
+  }
+
+  // renders create new post page
+  renderCreatePost() {
+    if (this.state.createPost) {
+      return (
+        <NewPost
+          changeNewPostState={this.changeNewPostState}
+          updateNewPostText={this.updateNewPostText}
+          changeMenuState={this.changeMenuState}
+          toggleCreatePost={this.toggleCreatePost}
+        />
+      );
+    }
+  }
+
+  // to toggle page to show when 'POST' button in menu is pressed
+  toggleCreatePost() {
+    this.setState({ createPost: !this.state.createPost });
+    console.log(this.state.createPost);
   }
 
   //change token on state to reflect the current user's token once logged in
@@ -83,6 +169,7 @@ export default class postAR extends Component {
     this.setState({
       token: token,
       currentView: view,
+      crosshair: true,
     });
   }
 
@@ -101,77 +188,48 @@ export default class postAR extends Component {
     }
     // await AsyncStorage.removeItem(AUTH_TOKEN);
   }
+
   render() {
-    return (
-      <AllPosts />
-    )
+    // login page
+    if (this.state.currentView === 'login') {
+      return (
+        <Login
+          changeCurrentView={this.changeCurrentView}
+          token={this.state.token}
+          setUserTokenAndView={this.setUserTokenAndView}
+        />
+      );
+    }
+    // AR world
+    else if (this.state.currentView === 'allPosts') {
+      return (
+        <View style={{ flex: 1 }}>
+          {this.renderNotification()}
+          {this.renderAR()}
+          {this.renderCreatePost()}
+          {this.renderCrosshair()}
+          {this.renderMenu()}
+        </View>
+      );
+    }
   }
-    // if (this.state.currentView === 'login') {
-    //   return (
-    //     <Login
-    //       changeCurrentView={this.changeCurrentView}
-    //       token={this.state.token}
-    //       setUserTokenAndView={this.setUserTokenAndView}
-    //     />
-    //   );
-    // }
-    // if (this.state.currentView === 'allPosts1') {
-    //   return (
-    //     <AllPosts
-    //       changeCurrentView={this.changeCurrentView}
-    //       token={this.state.token}
-    //       setUserTokenAndView={this.setUserTokenAndView}
-    //     />
-    //   );
-    // } else if (this.state.newPostInd) {
-    //   return (
-    //     <NewPost
-    //       changeNewPostState={this.changeNewPostState}
-    //       updateNewPost={this.updateNewPost}
-    //       changeMenuState={this.changeMenuState}
-    //     />
-    //   );
-    // } else if (this.state.currentView === 'allPosts') {
-    //   return (
-    //     <View style={{ flex: 1 }}>
-    //       {/* <Query query={FEED_QUERY}>
-    //         {({ loading, error, data }) => {
-    //           if (loading) return <Text>Fetching</Text>;
-    //           if (error) return <Text>Error</Text>;
-
-    //           const postsToRender = data.feed;
-    //           console.log('posts ' + postsToRender);
-    //           // this.setState({ allPosts: postsToRender });
-    //           return <View>{postsToRender.map(post => null)}</View>;
-    //         }}
-    //       </Query> */}
-
-    //       {this.renderMenu()}
-    //       <ViroARSceneNavigator
-    //         apiKey={APP_SECRET}
-    //         initialScene={{ scene: InitialARScene }}
-    //         viroAppProps={{
-    //           changeMenuState: this.changeMenuState,
-    //           newPost: this.state.newPost,
-    //           allPosts: this.state.allPosts || [
-    //             { id: 1, description: 'hello 1' },
-    //             { id: 2, description: 'hello 2' },
-    //             { id: 3, description: 'hello 3' },
-    //           ],
-    //         }}
-    //       />
-    //     </View>
-    //   );
-    // }
-    //   if (this.state.currentView === 'login') {
-    //     return (
-    //       <ViroARSceneNavigator
-    //         {...this.state.sharedProps}
-    //         initialScene={{ scene: InitialARScene }}
-    //       />
-    //     );
-    //   } else {
-    //     return <Login changeUserState={this.changeUserState} />;
-    //   }
-
 }
+
+const styles = StyleSheet.create({
+  crosshair: {
+    alignSelf: 'center',
+    position: 'absolute',
+    top: '40%',
+    width: 150,
+    height: 150,
+    borderWidth: 5,
+  },
+  notification: {
+    textAlign: 'center',
+    backgroundColor: 'black',
+    color: 'white',
+    fontSize: 20,
+    padding: 10,
+    paddingTop: 35,
+  },
+});
