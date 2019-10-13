@@ -9,7 +9,20 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import AllComments from './AllComments';
+import { client } from '../index.ios';
+import gql from 'graphql-tag';
 
+const POST_DELETE_MUTATION = gql`
+  mutation PostDeleteMutation($id: ID!) {
+    deletePost(id: $id) {
+      id
+      description
+      comments {
+        text
+      }
+    }
+  }
+`;
 class SinglePost extends Component {
   constructor() {
     super();
@@ -19,6 +32,18 @@ class SinglePost extends Component {
     };
   }
 
+  async deletePost(postId) {
+    await client.mutate({
+      mutation: POST_DELETE_MUTATION,
+      variables: {
+        id: postId,
+      },
+    });
+
+    this.setState({
+      text: '',
+    });
+  }
   closeModal() {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   }
@@ -37,6 +62,12 @@ class SinglePost extends Component {
             closeModal={() => this.closeModal()}
           />
         </View>
+        <Button
+          title="Delete post"
+          onPress={() => {
+            this.deletePost(this.props.post.id);
+          }}
+        />
       </View>
     );
   }
