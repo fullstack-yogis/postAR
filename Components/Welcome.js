@@ -32,5 +32,3 @@ export default class Welcome extends Component {
     }
   }
 }
-
-
