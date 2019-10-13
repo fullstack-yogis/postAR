@@ -186,6 +186,7 @@ class HelloWorldSceneAR extends Component {
   renderNewPost() {
     if (this.props.sceneNavigator.viroAppProps.newPostText.length !== 0) {
       // console.log(this.props.sceneNavigator.viroAppProps.newPostText);
+      // this.props.sceneNavigator.viroAppProps.toggleNmsg('DRAG_POST'); //infinite loop
       return (
         <ViroText
           style={{ color: '#258308' }}
@@ -249,6 +250,9 @@ class HelloWorldSceneAR extends Component {
                 key={post.id}
                 rotation={[-90, 0, 0]}
                 position={posnArray}
+                onClick={
+                  this.props.sceneNavigator.viroAppProps.toggleCreateComments
+                }
               />
             );
           })}

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import NewPost from './components/NewPost';
 import Login from './components/LogIn';
+import CreateComments from './components/CreateComments';
 
 import { ViroARSceneNavigator } from 'react-viro';
 
@@ -37,6 +38,7 @@ export default class postAR extends Component {
       newPostInd: false,
       accessAR: true,
       createPost: false,
+      createComments: false,
     };
     this.changeNewPostState = this.changeNewPostState.bind(this);
     this.updateNewPostText = this.updateNewPostText.bind(this);
@@ -49,7 +51,9 @@ export default class postAR extends Component {
     this.setUserTokenAndView = this.setUserTokenAndView.bind(this);
     this.changeCurrentView = this.changeCurrentView.bind(this);
     this.toggleCreatePost = this.toggleCreatePost.bind(this);
+    this.turnOffCreatePost = this.turnOffCreatePost.bind(this);
     this.resetNewPostText = this.resetNewPostText.bind(this);
+    this.toggleCreateComments = this.toggleCreateComments.bind(this);
   }
 
   // toggle create NewPost page state
@@ -88,7 +92,7 @@ export default class postAR extends Component {
           <Button
             title="HOME"
             style={{ color: 'white' }}
-            onPress={this.toggleCreatePost}
+            onPress={this.turnOffCreatePost}
           />
           <Button title="ACCOUNT" style={{ color: 'white' }} />
         </View>
@@ -120,7 +124,13 @@ export default class postAR extends Component {
         case 'SCAN_MARKER':
           return <Text style={styles.notification}>HOVER OVER MARKER</Text>;
         case 'LOOK_FOR_POST':
-          return <Text style={styles.notification}>LOOK AROUND FOR POST</Text>;
+          return (
+            <Text style={styles.notification}>
+              STEP BACK, LOOK AROUND FOR POST
+            </Text>
+          );
+        case 'DRAG_POST':
+          return <Text style={styles.notification}>DRAG AND PLACE POST</Text>;
         default:
           return <Text style={styles.notification} />;
       }
@@ -144,6 +154,7 @@ export default class postAR extends Component {
             changeCrosshairState: this.changeCrosshairState,
             newPostText: this.state.newPostText,
             resetNewPostText: this.resetNewPostText,
+            toggleCreateComments: this.toggleCreateComments,
           }}
         />
       );
@@ -167,6 +178,23 @@ export default class postAR extends Component {
   // to toggle page to show when 'POST' button in menu is pressed
   toggleCreatePost() {
     this.setState({ createPost: !this.state.createPost });
+  }
+
+  // minimizes create post component (meant for home button)
+  turnOffCreatePost() {
+    this.setState({ createPost: false });
+  }
+
+  // render create comment
+  renderCreateComments() {
+    if (this.state.createComments) {
+      return <CreateComments />;
+    }
+  }
+
+  // toggle create comment component
+  toggleCreateComments() {
+    this.setState({ createComments: !this.state.createComments });
   }
 
   //change token on state to reflect the current user's token once logged in
@@ -212,6 +240,7 @@ export default class postAR extends Component {
           {this.renderNotification()}
           {this.renderAR()}
           {this.renderCreatePost()}
+          {this.renderCreateComments()}
           {this.renderCrosshair()}
           {this.renderMenu()}
         </View>

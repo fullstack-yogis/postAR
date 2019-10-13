@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import { TextInput, View, StyleSheet, Text, Button } from 'react-native';
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Text,
+  Button,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { client } from '../index.ios';
 import gql from 'graphql-tag';
 
@@ -38,22 +49,29 @@ export default class CreateComments extends Component {
 
   render() {
     return (
-      <View>
-        <TextInput
-          multiline={true}
-          numberOfLines={4}
-          onChangeText={text => this.setState({ text })}
-          placeholder="Add your comments here..."
-          value={this.state.text}
-          style={styles.input}
-        />
-        <Button
-          title="Add Comments"
-          onPress={() => {
-            this.addComment(this.props.post.id);
-          }}
-        />
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        style={{ flex: 1 }}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1 }}>
+            <TextInput
+              multiline={true}
+              numberOfLines={4}
+              onChangeText={text => this.setState({ text })}
+              placeholder="Add your comments here..."
+              value={this.state.text}
+              style={styles.input}
+            />
+            <Button
+              title="Add Comments"
+              onPress={() => {
+                this.addComment(this.props.post.id);
+              }}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     );
   }
 }
