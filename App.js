@@ -39,6 +39,7 @@ export default class postAR extends Component {
       accessAR: true,
       createPost: false,
       createComments: false,
+      commentsForPostId: '',
     };
     this.changeNewPostState = this.changeNewPostState.bind(this);
     this.updateNewPostText = this.updateNewPostText.bind(this);
@@ -188,13 +189,18 @@ export default class postAR extends Component {
   // render create comment
   renderCreateComments() {
     if (this.state.createComments) {
-      return <CreateComments />;
+      return (
+        <CreateComments commentsForPostId={this.state.commentsForPostId} />
+      );
     }
   }
 
   // toggle create comment component
-  toggleCreateComments() {
-    this.setState({ createComments: !this.state.createComments });
+  toggleCreateComments(commentsForPostId) {
+    this.setState({
+      createComments: !this.state.createComments,
+      commentsForPostId,
+    });
   }
 
   //change token on state to reflect the current user's token once logged in

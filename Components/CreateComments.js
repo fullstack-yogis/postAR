@@ -26,16 +26,58 @@ const COMMENT_MUTATION = gql`
   }
 `;
 
+const POST_QUERY = gql`
+  query PostQuery($id: ID!) {
+    post(id: $id) {
+      id
+      description
+      comments {
+        id
+        text
+        user {
+          name
+        }
+      }
+    }
+  }
+`;
+
 export default class CreateComments extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      postDescription: '',
+      comments: [],
       text: '',
     };
   }
 
+  async componentDidMount() {
+    try {
+      //query from db
+      const { data } = await client.query({
+        query: POST_QUERY,
+        variables: {
+          id: this.props.commentsForPostId,
+        },
+        fetchPolicy: 'network-only',
+      });
+
+      //set to local state
+      this.setState({
+        postDescription: data.post.description,
+        comments: data.post.comments,
+      });
+
+      //register subscription
+      // this._subscribeToNewPosts(this.updateFeed);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async addComment(postId) {
-    await client.mutate({
+    let { data } = await client.mutate({
       mutation: COMMENT_MUTATION,
       variables: {
         postId: postId,
@@ -44,6 +86,7 @@ export default class CreateComments extends Component {
     });
     this.setState({
       text: '',
+      comments: [...this.state.comments, data.comment],
     });
   }
 
@@ -53,6 +96,9 @@ export default class CreateComments extends Component {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
       >
+        {this.state.comments.map(comment => (
+          <Text key={comment.id}>{comment.text}</Text>
+        ))}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ flex: 1 }}>
             <TextInput
@@ -66,7 +112,7 @@ export default class CreateComments extends Component {
             <Button
               title="Add Comments"
               onPress={() => {
-                this.addComment(this.props.post.id);
+                this.addComment(this.props.commentsForPostId);
               }}
             />
           </View>
