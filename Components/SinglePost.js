@@ -8,14 +8,34 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import AllComments from './AllComments';
 
 class SinglePost extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      isModalVisible: false,
+    };
+  }
+
+  closeModal() {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  }
   render() {
     return (
       <View>
         <View>
-          <Text>{this.props.post.description}</Text>
-          <Text>{this.props.post.id}</Text>
+          <TouchableOpacity
+            onPress={() => this.setState({ isModalVisible: true })}
+          >
+            <Text>{this.props.post.description}</Text>
+          </TouchableOpacity>
+          <AllComments
+            post={this.props.post}
+            isModalVisible={this.state.isModalVisible}
+            closeModal={() => this.closeModal()}
+          />
         </View>
       </View>
     );
