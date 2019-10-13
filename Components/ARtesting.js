@@ -86,7 +86,7 @@ class HelloWorldSceneAR extends Component {
       imageVisibility: false,
       pauseUpdates: false,
       dragPos: [], // postition xyz
-      dragAble: true,
+      // dragAble: true,
       allPosts: [],
       newPost: '', //description
     };
@@ -154,37 +154,29 @@ class HelloWorldSceneAR extends Component {
 
   //when the post is clicked, then it gets fixed and saved
   async pinAndSave() {
-    if (this.state.dragAble) {
-      try {
-        //post to DB function here
-        let newPost = await this.createPost({
-          description: this.props.sceneNavigator.viroAppProps.newPostText,
-          privacy: false,
-          xDistance: this.state.dragPos[0],
-          yDistance: this.state.dragPos[1],
-          zDistance: this.state.dragPos[2],
-          height: 0.1,
-          width: 0.1,
-        });
-        console.log('new1 is ', newPost);
-        console.log(
-          'bfore',
-          this.props.sceneNavigator.viroAppProps.newPostText
-        );
-        this.props.sceneNavigator.viroAppProps.resetNewPostText();
-        console.log(
-          'after',
-          this.props.sceneNavigator.viroAppProps.newPostText
-        );
-        this.setState({ dragAble: false });
-      } catch (e) {
-        console.log('pinAndSave error ' + e);
-      }
+    // if (this.state.dragAble) {
+    try {
+      //post to DB function here
+      let newPost = await this.createPost({
+        description: this.props.sceneNavigator.viroAppProps.newPostText,
+        privacy: false,
+        xDistance: this.state.dragPos[0],
+        yDistance: this.state.dragPos[1],
+        zDistance: this.state.dragPos[2],
+        height: 0.1,
+        width: 0.1,
+      });
+      this.props.sceneNavigator.viroAppProps.resetNewPostText();
+      // this.setState({ dragAble: false });
+    } catch (e) {
+      console.log('pinAndSave error ' + e);
     }
+    // }
   }
 
   renderNewPost() {
     if (this.props.sceneNavigator.viroAppProps.newPostText.length !== 0) {
+      // this.setState({ dragAble: true });
       // console.log(this.props.sceneNavigator.viroAppProps.newPostText);
       // this.props.sceneNavigator.viroAppProps.toggleNmsg('DRAG_POST'); //infinite loop
       return (
@@ -197,7 +189,8 @@ class HelloWorldSceneAR extends Component {
           position={[0, 0.3, 0]}
           visible={true}
           dragType="FixedToWorld"
-          onDrag={this.state.dragAble ? this._onDrag : null}
+          // onDrag={this.state.dragAble ? this._onDrag : null}
+          onDrag={this._onDrag}
           onClick={this.pinAndSave}
         />
       );
