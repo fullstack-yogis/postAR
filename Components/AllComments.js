@@ -32,6 +32,9 @@ const NEW_COMMENTS_SUBSCRIPTION = gql`
     newComment {
       id
       text
+      post {
+        id
+      }
       user {
         name
       }
