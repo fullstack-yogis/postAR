@@ -209,10 +209,10 @@ class HelloWorldSceneAR extends Component {
         mutation: POST_MUTATION,
         variables: post,
       });
-      console.log('data is ', data);
-      this.setState({
-        allPosts: [...this.state.allPosts, data.post],
-      });
+      // console.log('data is ', data);
+      // this.setState({
+      //   allPosts: [...this.state.allPosts, data.post],
+      // });
       return data.post;
     } catch (e) {
       console.log(e);
