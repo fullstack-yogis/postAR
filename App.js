@@ -161,7 +161,6 @@ export default class postAR extends Component {
   // to toggle page to show when 'POST' button in menu is pressed
   toggleCreatePost() {
     this.setState({ createPost: !this.state.createPost });
-    console.log(this.state.createPost);
   }
 
   //change token on state to reflect the current user's token once logged in

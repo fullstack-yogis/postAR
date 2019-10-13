@@ -77,6 +77,7 @@ class HelloWorldSceneAR extends Component {
     this._onDrag = this._onDrag.bind(this);
     this.pinAndSave = this.pinAndSave.bind(this);
     this.createPost = this.createPost.bind(this);
+    this.renderNewPost = this.renderNewPost.bind(this);
   }
 
   async componentDidMount() {
@@ -130,6 +131,26 @@ class HelloWorldSceneAR extends Component {
     }
   }
 
+  renderNewPost() {
+    if (this.props.sceneNavigator.viroAppProps.newPostText.length !== 0) {
+      // console.log(this.props.sceneNavigator.viroAppProps.newPostText);
+      return (
+        <ViroText
+          style={{ color: '#258308' }}
+          text={this.props.sceneNavigator.viroAppProps.newPostText}
+          height={0.5}
+          width={0.5}
+          rotation={[-90, 0, 0]}
+          position={[0, 0.3, 0]}
+          visible={true}
+          dragType="FixedToWorld"
+          onDrag={this.state.dragAble ? this._onDrag : null}
+          onClick={this.pinAndSave}
+        />
+      );
+    }
+  }
+
   async createPost(post) {
     try {
       const { data } = await client.mutate({
@@ -179,6 +200,7 @@ class HelloWorldSceneAR extends Component {
               />
             );
           })}
+          {this.renderNewPost()}
         </ViroARImageMarker>
       </ViroARScene>
     );
