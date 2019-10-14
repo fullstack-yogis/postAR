@@ -148,13 +148,6 @@ export default class postAR extends Component {
     this.setState({ notificationCase: nCase });
   }
 
-  updatePostPrivacy() {
-    let prevState = this.state.privacy
-    this.setState = {
-      privacy: !prevState
-    }
-  }
-
   renderAR() {
     if (this.state.accessAR) {
       return (
