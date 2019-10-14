@@ -9,10 +9,7 @@ import {
   ViroARTrackingTargets,
   ViroARImageMarker,
   ViroMaterials,
-<<<<<<< HEAD
-=======
   ViroFlexView,
->>>>>>> 6667b06b44d80238eb8f1ed993a8fd6fc7b046ae
 } from 'react-viro';
 
 // import { withApollo } from 'react-apollo';
@@ -90,14 +87,13 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
-<<<<<<< HEAD
       postPostedBy {
         id
-=======
       comments {
         id
         text
         createdAt
+        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -121,7 +117,6 @@ const NEW_COMMENTS_SUBSCRIPTION = gql`
       }
       user {
         name
->>>>>>> 6667b06b44d80238eb8f1ed993a8fd6fc7b046ae
       }
     }
   }
