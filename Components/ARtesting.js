@@ -87,10 +87,13 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+      postPostedBy {
+        id
       comments {
         id
         text
         createdAt
+        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -126,7 +129,7 @@ class HelloWorldSceneAR extends Component {
       planeVisibility: true,
       imageVisibility: false,
       pauseUpdates: false,
-      dragPos: [], // postition xyz
+      dragPos: [0, 0, 0], // postition xyz
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
@@ -185,7 +188,11 @@ class HelloWorldSceneAR extends Component {
       })
       .subscribe({
         next({ data }) {
-          updateFeed(data.newPost);
+          console.log('data', data);
+          if (data.newPost) {
+            console.log('entering this');
+            updateFeed(data.newPost);
+          }
         },
       });
   }
@@ -235,16 +242,24 @@ class HelloWorldSceneAR extends Component {
     // if (this.state.dragAble) {
     try {
       //post to DB function here
+      console.log('this state', this.state);
       let newPost = await this.createPost({
         description: this.props.sceneNavigator.viroAppProps.newPostText,
         privacy: this.props.sceneNavigator.viroAppProps.privacy,
         xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1],
+        yDistance: this.state.dragPos[1] + 0.3,
         zDistance: this.state.dragPos[2],
         height: 0.1,
         width: 0.1,
       });
-      this.props.sceneNavigator.viroAppProps.resetNewPostText();
+      console.log('newPost after pin and save', newPost);
+      if (newPost.privacy === false) {
+        this.props.sceneNavigator.viroAppProps.resetNewPostText();
+      } else {
+        this.updateFeed(newPost);
+        this.props.sceneNavigator.viroAppProps.resetNewPostText();
+      }
+
       // this.setState({ dragAble: false });
     } catch (e) {
       console.log('pinAndSave error ' + e);
@@ -315,7 +330,7 @@ class HelloWorldSceneAR extends Component {
           // dragType="FixedToPlane"
         >
           {this.state.allPosts.map(post => {
-            let posnArray = [post.xDistance, 0.2, post.zDistance];
+            let posnArray = [post.xDistance, post.yDistance, post.zDistance];
             return (
               <ViroFlexView key={post.id}>
                 <ViroText
