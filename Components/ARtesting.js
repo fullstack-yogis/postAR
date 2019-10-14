@@ -24,6 +24,17 @@ const FEED_QUERY = gql`
       xDistance
       yDistance
       zDistance
+      comments {
+        id
+        text
+        createdAt
+        post {
+          id
+        }
+        user {
+          name
+        }
+      }
     }
   }
 `;
@@ -61,7 +72,7 @@ const POST_MUTATION = gql`
   }
 `;
 
-//subscription query
+//subscription query for new posts
 const NEW_POSTS_SUBSCRIPTION = gql`
   subscription {
     newPost {
@@ -74,6 +85,23 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+    }
+  }
+`;
+
+//subscription for new comments
+const NEW_COMMENTS_SUBSCRIPTION = gql`
+  subscription {
+    newComment {
+      id
+      text
+      createdAt
+      post {
+        id
+      }
+      user {
+        name
+      }
     }
   }
 `;
@@ -98,6 +126,8 @@ class HelloWorldSceneAR extends Component {
     this.renderNewPost = this.renderNewPost.bind(this);
     this.updateFeed = this.updateFeed.bind(this);
     this._subscribeToNewPosts = this._subscribeToNewPosts.bind(this);
+    this.updateCommentFeed = this.updateCommentFeed.bind(this);
+    this._subscribeToNewComments = this._subscribeToNewComments.bind(this);
   }
 
   async componentDidMount() {
@@ -113,8 +143,10 @@ class HelloWorldSceneAR extends Component {
         newPost: this.props.sceneNavigator.viroAppProps.newPostText,
       });
 
-      //register subscription
+      //register post subscription
       this._subscribeToNewPosts(this.updateFeed);
+      //register comment subscription
+      this._subscribeToNewComments(this.updateCommentFeed);
     } catch (error) {
       console.error(error);
     }
@@ -137,6 +169,30 @@ class HelloWorldSceneAR extends Component {
       .subscribe({
         next({ data }) {
           updateFeed(data.newPost);
+        },
+      });
+  }
+
+  //deal with new comment coming in through subsription
+  updateCommentFeed(newComment) {
+    console.log('new comment is ', newComment);
+    // if (newComment.post.id === this.state.postId) {
+    //   let prevComments = this.state.comments;
+    //   this.setState({ comments: [...prevComments, newComment] });
+    // }
+  }
+
+  //subscribe to new comments
+  _subscribeToNewComments(updateFeed) {
+    console.log('entered comments sub--------------------');
+    client
+      .subscribe({
+        query: NEW_COMMENTS_SUBSCRIPTION,
+      })
+      .subscribe({
+        next({ data }) {
+          console.log('data received from subscribe', data);
+          updateFeed(data.newComment);
         },
       });
   }
