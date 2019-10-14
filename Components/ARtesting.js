@@ -8,7 +8,8 @@ import {
   ViroImage,
   ViroARTrackingTargets,
   ViroARImageMarker,
-  ViroMaterials
+  ViroMaterials,
+  ViroFlexView,
 } from 'react-viro';
 
 // import { withApollo } from 'react-apollo';
@@ -25,6 +26,17 @@ const FEED_QUERY = gql`
       xDistance
       yDistance
       zDistance
+      comments {
+        id
+        text
+        createdAt
+        post {
+          id
+        }
+        user {
+          name
+        }
+      }
     }
   }
 `;
@@ -62,7 +74,7 @@ const POST_MUTATION = gql`
   }
 `;
 
-//subscription query
+//subscription query for new posts
 const NEW_POSTS_SUBSCRIPTION = gql`
   subscription {
     newPost {
@@ -75,6 +87,34 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+      comments {
+        id
+        text
+        createdAt
+        post {
+          id
+        }
+        user {
+          name
+        }
+      }
+    }
+  }
+`;
+
+//subscription for new comments
+const NEW_COMMENTS_SUBSCRIPTION = gql`
+  subscription {
+    newComment {
+      id
+      text
+      createdAt
+      post {
+        id
+      }
+      user {
+        name
+      }
     }
   }
 `;
@@ -99,6 +139,8 @@ class HelloWorldSceneAR extends Component {
     this.renderNewPost = this.renderNewPost.bind(this);
     this.updateFeed = this.updateFeed.bind(this);
     this._subscribeToNewPosts = this._subscribeToNewPosts.bind(this);
+    this.updateCommentFeed = this.updateCommentFeed.bind(this);
+    this._subscribeToNewComments = this._subscribeToNewComments.bind(this);
   }
 
   async componentDidMount() {
@@ -109,13 +151,19 @@ class HelloWorldSceneAR extends Component {
         fetchPolicy: 'network-only',
       });
       //set to local state
+      let posts = data.feed.map(post => {
+        if (post.comments.length > 3) post.comments.splice(3);
+        return post;
+      });
       this.setState({
-        allPosts: data.feed,
+        allPosts: posts,
         newPost: this.props.sceneNavigator.viroAppProps.newPostText,
       });
 
-      //register subscription
+      //register post subscription
       this._subscribeToNewPosts(this.updateFeed);
+      //register comment subscription
+      this._subscribeToNewComments(this.updateCommentFeed);
     } catch (error) {
       console.error(error);
     }
@@ -138,6 +186,35 @@ class HelloWorldSceneAR extends Component {
       .subscribe({
         next({ data }) {
           updateFeed(data.newPost);
+        },
+      });
+  }
+
+  //deal with new comment coming in through subsription
+  updateCommentFeed(newComment) {
+    let newPosts = this.state.allPosts.map(post => {
+      if (post.id === newComment.post.id) {
+        let newPost = post;
+        newPost.comments = newPost.comments
+          .filter((comment, idx) => idx !== 0)
+          .concat([newComment]);
+        return newPost;
+      } else {
+        return post;
+      }
+    });
+    this.setState({ allPosts: newPosts });
+  }
+
+  //subscribe to new comments
+  _subscribeToNewComments(updateCommentFeed) {
+    client
+      .subscribe({
+        query: NEW_COMMENTS_SUBSCRIPTION,
+      })
+      .subscribe({
+        next({ data }) {
+          updateCommentFeed(data.newComment);
         },
       });
   }
@@ -188,7 +265,7 @@ class HelloWorldSceneAR extends Component {
           width={0.5}
           rotation={[-90, 0, 0]}
           extrusionDepth={8}
-          materials={["frontMaterial", "backMaterial", "sideMaterial"]}
+          materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
           position={[0, 0.3, 0]}
           visible={true}
           dragType="FixedToWorld"
@@ -239,21 +316,38 @@ class HelloWorldSceneAR extends Component {
         >
           {this.state.allPosts.map(post => {
             let posnArray = [post.xDistance, 0.2, post.zDistance];
-            // console.log('post is ', post.description);
             return (
-              <ViroText
-                text={post.description}
-                key={post.id}
-                extrusionDepth={8}
-                materials={["frontMaterial", "backMaterial", "sideMaterial"]}
-                rotation={[-90, 0, 0]}
-                position={posnArray}
-                onClick={() =>
-                  this.props.sceneNavigator.viroAppProps.toggleCreateComments(
-                    post.id
-                  )
-                }
-              />
+              <ViroFlexView key={post.id}>
+                <ViroText
+                  text={post.description || ''}
+                  extrusionDepth={8}
+                  materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
+                  rotation={[-90, 0, 0]}
+                  position={posnArray}
+                  onClick={() => {
+                    // console.log('clicking');
+                    this.props.sceneNavigator.viroAppProps.toggleCreateComments(
+                      post.id
+                    );
+                  }}
+                />
+                {post.comments.map((comment, idx) => {
+                  let commentPosnArray = [
+                    post.xDistance,
+                    0.2,
+                    post.zDistance + 0.1 * (idx + 1),
+                  ];
+
+                  return (
+                    <ViroText
+                      text={comment.text || ''}
+                      key={comment.id}
+                      rotation={[-90, 0, 0]}
+                      position={commentPosnArray}
+                    />
+                  );
+                })}
+              </ViroFlexView>
             );
           })}
           {this.renderNewPost()}
