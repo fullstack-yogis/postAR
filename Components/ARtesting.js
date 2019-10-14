@@ -8,7 +8,7 @@ import {
   ViroImage,
   ViroARTrackingTargets,
   ViroARImageMarker,
-  ViroMaterials
+  ViroMaterials,
 } from 'react-viro';
 
 // import { withApollo } from 'react-apollo';
@@ -167,6 +167,8 @@ class HelloWorldSceneAR extends Component {
         height: 0.1,
         width: 0.1,
       });
+      console.log('newPost is ', newPost);
+
       this.props.sceneNavigator.viroAppProps.resetNewPostText();
       // this.setState({ dragAble: false });
     } catch (e) {
@@ -188,7 +190,7 @@ class HelloWorldSceneAR extends Component {
           width={0.5}
           rotation={[-90, 0, 0]}
           extrusionDepth={8}
-          materials={["frontMaterial", "backMaterial", "sideMaterial"]}
+          materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
           position={[0, 0.3, 0]}
           visible={true}
           dragType="FixedToWorld"
@@ -245,7 +247,7 @@ class HelloWorldSceneAR extends Component {
                 text={post.description}
                 key={post.id}
                 extrusionDepth={8}
-                materials={["frontMaterial", "backMaterial", "sideMaterial"]}
+                materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
                 rotation={[-90, 0, 0]}
                 position={posnArray}
                 onClick={() =>
