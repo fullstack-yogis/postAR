@@ -86,7 +86,7 @@ export default class NewPost extends Component {
                   <Button
                     title="SUBMIT"
                     onPress={() => {
-                      this.props.updateNewPostText(this.state.text);
+                      this.props.updateNewPostTextAndPriv(this.state.text, this.state.private);
                       this.props.toggleCreatePost();
                     }}
                   />

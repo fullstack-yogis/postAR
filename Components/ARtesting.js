@@ -8,6 +8,7 @@ import {
   ViroImage,
   ViroARTrackingTargets,
   ViroARImageMarker,
+  ViroMaterials
 } from 'react-viro';
 
 // import { withApollo } from 'react-apollo';
@@ -215,7 +216,7 @@ class HelloWorldSceneAR extends Component {
       //post to DB function here
       let newPost = await this.createPost({
         description: this.props.sceneNavigator.viroAppProps.newPostText,
-        privacy: false,
+        privacy: this.props.sceneNavigator.viroAppProps.privacy,
         xDistance: this.state.dragPos[0],
         yDistance: this.state.dragPos[1],
         zDistance: this.state.dragPos[2],
@@ -242,6 +243,8 @@ class HelloWorldSceneAR extends Component {
           height={0.5}
           width={0.5}
           rotation={[-90, 0, 0]}
+          extrusionDepth={8}
+          materials={["frontMaterial", "backMaterial", "sideMaterial"]}
           position={[0, 0.3, 0]}
           visible={true}
           dragType="FixedToWorld"
@@ -297,6 +300,8 @@ class HelloWorldSceneAR extends Component {
               <ViroText
                 text={post.description}
                 key={post.id}
+                extrusionDepth={8}
+                materials={["frontMaterial", "backMaterial", "sideMaterial"]}
                 rotation={[-90, 0, 0]}
                 position={posnArray}
                 onClick={() =>
@@ -315,5 +320,17 @@ class HelloWorldSceneAR extends Component {
 }
 
 // export default withApollo(HelloWorldSceneAR);
+
+ViroMaterials.createMaterials({
+  frontMaterial: {
+    diffuseColor: '#FFFFFF',
+  },
+  backMaterial: {
+    diffuseColor: '#FF0000',
+  },
+  sideMaterial: {
+    diffuseColor: '#0000FF',
+  },
+});
 
 module.exports = HelloWorldSceneAR;
