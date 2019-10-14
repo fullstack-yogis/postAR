@@ -75,6 +75,9 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+      postPostedBy {
+        id
+      }
     }
   }
 `;
@@ -86,7 +89,7 @@ class HelloWorldSceneAR extends Component {
       planeVisibility: true,
       imageVisibility: false,
       pauseUpdates: false,
-      dragPos: [], // postition xyz
+      dragPos: [0, 0, 0], // postition xyz
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
@@ -137,7 +140,12 @@ class HelloWorldSceneAR extends Component {
       })
       .subscribe({
         next({ data }) {
-          updateFeed(data.newPost);
+          console.log('data', data)
+          if (data.newPost) {
+            console.log('entering this')
+            updateFeed(data.newPost);
+          }
+
         },
       });
   }
@@ -158,6 +166,7 @@ class HelloWorldSceneAR extends Component {
     // if (this.state.dragAble) {
     try {
       //post to DB function here
+      console.log('this state', this.state)
       let newPost = await this.createPost({
         description: this.props.sceneNavigator.viroAppProps.newPostText,
         privacy: this.props.sceneNavigator.viroAppProps.privacy,
@@ -167,7 +176,14 @@ class HelloWorldSceneAR extends Component {
         height: 0.1,
         width: 0.1,
       });
-      this.props.sceneNavigator.viroAppProps.resetNewPostText();
+
+      if (newPost.privacy === false) {
+        this.props.sceneNavigator.viroAppProps.resetNewPostText();
+      } else {
+        this.updateFeed(newPost)
+        this.props.sceneNavigator.viroAppProps.resetNewPostText();
+      }
+
       // this.setState({ dragAble: false });
     } catch (e) {
       console.log('pinAndSave error ' + e);
