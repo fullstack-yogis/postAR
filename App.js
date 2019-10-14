@@ -100,11 +100,33 @@ export default class postAR extends Component {
             style={{ color: 'white' }}
             onPress={this.turnOffCreatePost}
           />
-          <Button title="ACCOUNT" style={{ color: 'white' }} />
+          <Button
+            title="LOGOUT"
+            style={{ color: 'white' }}
+            onPress={this.logout}
+          />
         </View>
       );
     }
   }
+
+  //logout function to remove token from asyncStorage and redirect to login page
+  logout = async () => {
+    await AsyncStorage.removeItem(AUTH_TOKEN);
+    this.setState({
+      currentView: 'login',
+      token: '',
+      notification: true,
+      notificationCase: 'SCAN_MARKER',
+      menu: false,
+      newPostText: '',
+      newPostInd: false,
+      accessAR: true,
+      createPost: false,
+      createComments: false,
+      commentsForPostId: '',
+    });
+  };
 
   // toggle create new post menu (on top of screen)
   changeMenuState() {
@@ -226,6 +248,7 @@ export default class postAR extends Component {
     });
   }
 
+  //change currentView on state to navigate to a different view
   changeCurrentView(view) {
     this.setState({ view });
   }
