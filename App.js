@@ -36,6 +36,7 @@ export default class postAR extends Component {
       menu: false,
       newPostText: '',
       newPostInd: false,
+      postPrivacy: false,
       accessAR: true,
       createPost: false,
       createComments: false,
@@ -55,6 +56,7 @@ export default class postAR extends Component {
     this.turnOffCreatePost = this.turnOffCreatePost.bind(this);
     this.resetNewPostText = this.resetNewPostText.bind(this);
     this.toggleCreateComments = this.toggleCreateComments.bind(this);
+    this.updatePostPrivacy = this.updatePostPrivacy.bind(this)
   }
 
   // toggle create NewPost page state
@@ -63,8 +65,11 @@ export default class postAR extends Component {
   }
 
   // get the new post text (description)
-  updateNewPostText(text) {
-    this.setState({ newPostText: text });
+  updateNewPostText(text, privacy) {
+    this.setState({
+      newPostText: text,
+      privacy
+    });
   }
 
   // reset new post text to ''
@@ -143,6 +148,13 @@ export default class postAR extends Component {
     this.setState({ notificationCase: nCase });
   }
 
+  updatePostPrivacy() {
+    let prevState = this.state.privacy
+    this.setState = {
+      privacy: !prevState
+    }
+  }
+
   renderAR() {
     if (this.state.accessAR) {
       return (
@@ -154,6 +166,7 @@ export default class postAR extends Component {
             toggleNmsg: this.toggleNmsg,
             changeCrosshairState: this.changeCrosshairState,
             newPostText: this.state.newPostText,
+            privacy: this.state.privacy,
             resetNewPostText: this.resetNewPostText,
             toggleCreateComments: this.toggleCreateComments,
           }}
@@ -170,6 +183,7 @@ export default class postAR extends Component {
           changeNewPostState={this.changeNewPostState}
           updateNewPostText={this.updateNewPostText}
           changeMenuState={this.changeMenuState}
+          updatePostPrivacy={this.updatePostPrivacy}
           toggleCreatePost={this.toggleCreatePost}
         />
       );
@@ -217,6 +231,7 @@ export default class postAR extends Component {
   }
 
   async componentDidMount() {
+    // await AsyncStorage.removeItem(AUTH_TOKEN)
     const token = await AsyncStorage.getItem(AUTH_TOKEN);
     console.log(
       'component mounted get token from asyncStorage🤩🤩🤩🤩🤩🤩',
