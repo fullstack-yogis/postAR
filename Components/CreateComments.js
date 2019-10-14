@@ -42,14 +42,32 @@ const POST_QUERY = gql`
   }
 `;
 
+const NEW_COMMENTS_SUBSCRIPTION = gql`
+  subscription {
+    newComment {
+      id
+      text
+      post {
+        id
+      }
+      user {
+        name
+      }
+    }
+  }
+`;
+
 export default class CreateComments extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
+      postId: '',
       postDescription: '',
       comments: [],
       text: '',
     };
+    this.updateFeed = this.updateFeed.bind(this);
+    this._subscribeToNewComments = this._subscribeToNewComments.bind(this);
   }
 
   async componentDidMount() {
@@ -66,14 +84,36 @@ export default class CreateComments extends Component {
       //set to local state
       this.setState({
         postDescription: data.post.description,
+        postId: data.post.id,
         comments: data.post.comments,
       });
 
       //register subscription
-      // this._subscribeToNewPosts(this.updateFeed);
+      this._subscribeToNewComments(this.updateFeed);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  updateFeed(newComment) {
+    if (newComment.post.id === this.state.postId) {
+      let prevComments = this.state.comments;
+      this.setState({ comments: [...prevComments, newComment] });
+    }
+  }
+
+  _subscribeToNewComments(updateFeed) {
+    console.log('entered comments sub--------------------');
+    client
+      .subscribe({
+        query: NEW_COMMENTS_SUBSCRIPTION,
+      })
+      .subscribe({
+        next({ data }) {
+          console.log('data received from subscribe', data);
+          updateFeed(data.newComment);
+        },
+      });
   }
 
   async addComment(postId) {
@@ -86,7 +126,7 @@ export default class CreateComments extends Component {
     });
     this.setState({
       text: '',
-      comments: [...this.state.comments, data.comment],
+      // comments: [...this.state.comments, data.comment],
     });
   }
 
@@ -96,8 +136,11 @@ export default class CreateComments extends Component {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
       >
+        <Text>POST: {this.state.postDescription}</Text>
         {this.state.comments.map(comment => (
-          <Text key={comment.id}>{comment.text}</Text>
+          <Text key={comment.id}>
+            {comment.text} (by {comment.user.name})
+          </Text>
         ))}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ flex: 1 }}>
