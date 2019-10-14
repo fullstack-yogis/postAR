@@ -55,6 +55,7 @@ export default class postAR extends Component {
     this.turnOffCreatePost = this.turnOffCreatePost.bind(this);
     this.resetNewPostText = this.resetNewPostText.bind(this);
     this.toggleCreateComments = this.toggleCreateComments.bind(this);
+    this.turnOffCreateComments = this.turnOffCreateComments.bind(this);
   }
 
   // toggle create NewPost page state
@@ -93,7 +94,10 @@ export default class postAR extends Component {
           <Button
             title="HOME"
             style={{ color: 'white' }}
-            onPress={this.turnOffCreatePost}
+            onPress={() => {
+              this.turnOffCreatePost();
+              this.turnOffCreateComments();
+            }}
           />
           <Button title="ACCOUNT" style={{ color: 'white' }} />
         </View>
@@ -201,6 +205,11 @@ export default class postAR extends Component {
       createComments: !this.state.createComments,
       commentsForPostId,
     });
+  }
+
+  // minimizes comments component (meant for home button)
+  turnOffCreateComments() {
+    this.setState({ createComments: false });
   }
 
   //change token on state to reflect the current user's token once logged in
