@@ -43,7 +43,7 @@ export default class postAR extends Component {
       commentsForPostId: '',
     };
     this.changeNewPostState = this.changeNewPostState.bind(this);
-    this.updateNewPostText = this.updateNewPostText.bind(this);
+    this.updateNewPostTextAndPriv = this.updateNewPostTextAndPriv.bind(this);
     this.renderNotification = this.renderNotification.bind(this);
     this.toggleNmsg = this.toggleNmsg.bind(this);
     this.changeMenuState = this.changeMenuState.bind(this);
@@ -56,7 +56,6 @@ export default class postAR extends Component {
     this.turnOffCreatePost = this.turnOffCreatePost.bind(this);
     this.resetNewPostText = this.resetNewPostText.bind(this);
     this.toggleCreateComments = this.toggleCreateComments.bind(this);
-    this.updatePostPrivacy = this.updatePostPrivacy.bind(this)
   }
 
   // toggle create NewPost page state
@@ -65,7 +64,7 @@ export default class postAR extends Component {
   }
 
   // get the new post text (description)
-  updateNewPostText(text, privacy) {
+  updateNewPostTextAndPriv(text, privacy) {
     this.setState({
       newPostText: text,
       privacy
@@ -196,9 +195,8 @@ export default class postAR extends Component {
       return (
         <NewPost
           changeNewPostState={this.changeNewPostState}
-          updateNewPostText={this.updateNewPostText}
+          updateNewPostTextAndPriv={this.updateNewPostTextAndPriv}
           changeMenuState={this.changeMenuState}
-          updatePostPrivacy={this.updatePostPrivacy}
           toggleCreatePost={this.toggleCreatePost}
         />
       );
