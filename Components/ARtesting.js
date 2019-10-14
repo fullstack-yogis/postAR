@@ -170,12 +170,12 @@ class HelloWorldSceneAR extends Component {
         description: this.props.sceneNavigator.viroAppProps.newPostText,
         privacy: this.props.sceneNavigator.viroAppProps.privacy,
         xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1],
+        yDistance: this.state.dragPos[1] + 0.3,
         zDistance: this.state.dragPos[2],
         height: 0.1,
         width: 0.1,
       });
-
+      console.log('newPost after pin and save', newPost);
       if (newPost.privacy === false) {
         this.props.sceneNavigator.viroAppProps.resetNewPostText();
       } else {
@@ -253,8 +253,9 @@ class HelloWorldSceneAR extends Component {
           // dragType="FixedToPlane"
         >
           {this.state.allPosts.map(post => {
-            let posnArray = [post.xDistance, 0.2, post.zDistance];
-            // console.log('post is ', post.description);
+            let posnArray = [post.xDistance, post.yDistance, post.zDistance];
+            console.log('post is ', post);
+
             return (
               <ViroText
                 text={post.description}
