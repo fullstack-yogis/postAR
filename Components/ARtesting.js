@@ -87,6 +87,17 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+      comments {
+        id
+        text
+        createdAt
+        post {
+          id
+        }
+        user {
+          name
+        }
+      }
     }
   }
 `;
