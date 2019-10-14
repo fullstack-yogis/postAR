@@ -36,13 +36,14 @@ export default class postAR extends Component {
       menu: false,
       newPostText: '',
       newPostInd: false,
+      postPrivacy: false,
       accessAR: true,
       createPost: false,
       createComments: false,
       commentsForPostId: '',
     };
     this.changeNewPostState = this.changeNewPostState.bind(this);
-    this.updateNewPostText = this.updateNewPostText.bind(this);
+    this.updateNewPostTextAndPriv = this.updateNewPostTextAndPriv.bind(this);
     this.renderNotification = this.renderNotification.bind(this);
     this.toggleNmsg = this.toggleNmsg.bind(this);
     this.changeMenuState = this.changeMenuState.bind(this);
@@ -64,8 +65,11 @@ export default class postAR extends Component {
   }
 
   // get the new post text (description)
-  updateNewPostText(text) {
-    this.setState({ newPostText: text });
+  updateNewPostTextAndPriv(text, privacy) {
+    this.setState({
+      newPostText: text,
+      privacy
+    });
   }
 
   // reset new post text to ''
@@ -99,11 +103,33 @@ export default class postAR extends Component {
               this.turnOffCreateComments();
             }}
           />
-          <Button title="ACCOUNT" style={{ color: 'white' }} />
+          <Button
+            title="LOGOUT"
+            style={{ color: 'white' }}
+            onPress={this.logout}
+          />
         </View>
       );
     }
   }
+
+  //logout function to remove token from asyncStorage and redirect to login page
+  logout = async () => {
+    await AsyncStorage.removeItem(AUTH_TOKEN);
+    this.setState({
+      currentView: 'login',
+      token: '',
+      notification: true,
+      notificationCase: 'SCAN_MARKER',
+      menu: false,
+      newPostText: '',
+      newPostInd: false,
+      accessAR: true,
+      createPost: false,
+      createComments: false,
+      commentsForPostId: '',
+    });
+  };
 
   // toggle create new post menu (on top of screen)
   changeMenuState() {
@@ -158,6 +184,7 @@ export default class postAR extends Component {
             toggleNmsg: this.toggleNmsg,
             changeCrosshairState: this.changeCrosshairState,
             newPostText: this.state.newPostText,
+            privacy: this.state.privacy,
             resetNewPostText: this.resetNewPostText,
             toggleCreateComments: this.toggleCreateComments,
           }}
@@ -172,7 +199,7 @@ export default class postAR extends Component {
       return (
         <NewPost
           changeNewPostState={this.changeNewPostState}
-          updateNewPostText={this.updateNewPostText}
+          updateNewPostTextAndPriv={this.updateNewPostTextAndPriv}
           changeMenuState={this.changeMenuState}
           toggleCreatePost={this.toggleCreatePost}
         />
@@ -221,11 +248,13 @@ export default class postAR extends Component {
     });
   }
 
+  //change currentView on state to navigate to a different view
   changeCurrentView(view) {
     this.setState({ view });
   }
 
   async componentDidMount() {
+    // await AsyncStorage.removeItem(AUTH_TOKEN)
     const token = await AsyncStorage.getItem(AUTH_TOKEN);
     console.log(
       'component mounted get token from asyncStorage🤩🤩🤩🤩🤩🤩',
