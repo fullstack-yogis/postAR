@@ -8,7 +8,8 @@ import {
   ViroImage,
   ViroARTrackingTargets,
   ViroARImageMarker,
-  ViroMaterials
+  ViroMaterials,
+  ViroFlexView,
 } from 'react-viro';
 
 // import { withApollo } from 'react-apollo';
@@ -139,8 +140,12 @@ class HelloWorldSceneAR extends Component {
         fetchPolicy: 'network-only',
       });
       //set to local state
+      let posts = data.feed.map(post => {
+        if (post.comments.length > 3) post.comments.splice(3);
+        return post;
+      });
       this.setState({
-        allPosts: data.feed,
+        allPosts: posts,
         newPost: this.props.sceneNavigator.viroAppProps.newPostText,
       });
 
@@ -176,24 +181,29 @@ class HelloWorldSceneAR extends Component {
 
   //deal with new comment coming in through subsription
   updateCommentFeed(newComment) {
-    console.log('new comment is ', newComment);
-    // if (newComment.post.id === this.state.postId) {
-    //   let prevComments = this.state.comments;
-    //   this.setState({ comments: [...prevComments, newComment] });
-    // }
+    let newPosts = this.state.allPosts.map(post => {
+      if (post.id === newComment.post.id) {
+        let newPost = post;
+        newPost.comments = newPost.comments
+          .filter((comment, idx) => idx !== 0)
+          .concat([newComment]);
+        return newPost;
+      } else {
+        return post;
+      }
+    });
+    this.setState({ allPosts: newPosts });
   }
 
   //subscribe to new comments
-  _subscribeToNewComments(updateFeed) {
-    console.log('entered comments sub--------------------');
+  _subscribeToNewComments(updateCommentFeed) {
     client
       .subscribe({
         query: NEW_COMMENTS_SUBSCRIPTION,
       })
       .subscribe({
         next({ data }) {
-          console.log('data received from subscribe', data);
-          updateFeed(data.newComment);
+          updateCommentFeed(data.newComment);
         },
       });
   }
@@ -244,7 +254,7 @@ class HelloWorldSceneAR extends Component {
           width={0.5}
           rotation={[-90, 0, 0]}
           extrusionDepth={8}
-          materials={["frontMaterial", "backMaterial", "sideMaterial"]}
+          materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
           position={[0, 0.3, 0]}
           visible={true}
           dragType="FixedToWorld"
@@ -295,21 +305,38 @@ class HelloWorldSceneAR extends Component {
         >
           {this.state.allPosts.map(post => {
             let posnArray = [post.xDistance, 0.2, post.zDistance];
-            // console.log('post is ', post.description);
             return (
-              <ViroText
-                text={post.description}
-                key={post.id}
-                extrusionDepth={8}
-                materials={["frontMaterial", "backMaterial", "sideMaterial"]}
-                rotation={[-90, 0, 0]}
-                position={posnArray}
-                onClick={() =>
-                  this.props.sceneNavigator.viroAppProps.toggleCreateComments(
-                    post.id
-                  )
-                }
-              />
+              <ViroFlexView key={post.id}>
+                <ViroText
+                  text={post.description || ''}
+                  extrusionDepth={8}
+                  materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
+                  rotation={[-90, 0, 0]}
+                  position={posnArray}
+                  onClick={() => {
+                    // console.log('clicking');
+                    this.props.sceneNavigator.viroAppProps.toggleCreateComments(
+                      post.id
+                    );
+                  }}
+                />
+                {post.comments.map((comment, idx) => {
+                  let commentPosnArray = [
+                    post.xDistance,
+                    0.2,
+                    post.zDistance + 0.1 * (idx + 1),
+                  ];
+
+                  return (
+                    <ViroText
+                      text={comment.text || ''}
+                      key={comment.id}
+                      rotation={[-90, 0, 0]}
+                      position={commentPosnArray}
+                    />
+                  );
+                })}
+              </ViroFlexView>
             );
           })}
           {this.renderNewPost()}
