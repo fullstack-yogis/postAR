@@ -136,14 +136,14 @@ export default class CreateComments extends Component {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
       >
-        <Text>POST: {this.state.postDescription}</Text>
-        {this.state.comments.map(comment => (
-          <Text key={comment.id}>
-            {comment.text} (by {comment.user.name})
-          </Text>
-        ))}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ flex: 1 }}>
+            <Text>POST: {this.state.postDescription}</Text>
+            {this.state.comments.map(comment => (
+              <Text key={comment.id}>
+                {comment.text} (by {comment.user.name})
+              </Text>
+            ))}
             <TextInput
               multiline={true}
               numberOfLines={4}
