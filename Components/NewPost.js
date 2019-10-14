@@ -42,17 +42,17 @@ export default class NewPost extends Component {
               >
                 <Text
                   style={{
-                    fontSize: 30,
+                    fontSize: 10,
                     fontWeight: 'bold',
                     alignSelf: 'center',
-                    padding: 15,
+                    padding: 5,
                   }}
                 >
                   NEW POST
                 </Text>
                 <TextInput
                   multiline
-                  style={{ borderWidth: 1, padding: 10, height: 400 }}
+                  style={{ borderWidth: 1, padding: 10 }}
                   placeholder="Type new post here!"
                   onChangeText={text => this.setState({ text })}
                   value={this.state.text}
@@ -61,25 +61,36 @@ export default class NewPost extends Component {
                 <View
                   style={{
                     flexDirection: 'row',
-                    paddingTop: 15,
+                    // paddingTop: 15,
                     justifyContent: 'space-evenly',
                   }}
                 >
-                  <Text style={{ fontSize: 20 }}>Private?</Text>
-                  <Switch
-                    onValueChange={this.togglePrivacy}
-                    value={this.state.private}
-                    trackColor={{ false: 'grey', true: 'red' }}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingTop: 2,
+                    }}
+                  >
+                    <Text
+                      style={{ fontSize: 20, paddingTop: 1, paddingRight: 3 }}
+                    >
+                      Private
+                    </Text>
+                    <Switch
+                      style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                      onValueChange={this.togglePrivacy}
+                      value={this.state.private}
+                      trackColor={{ false: 'grey', true: 'red' }}
+                    />
+                  </View>
+                  <Button
+                    title="SUBMIT"
+                    onPress={() => {
+                      this.props.updateNewPostText(this.state.text);
+                      this.props.toggleCreatePost();
+                    }}
                   />
                 </View>
-                <Button
-                  title="SUBMIT"
-                  onPress={() => {
-                    this.props.updateNewPost(this.state.text);
-                    this.props.changeMenuState();
-                    this.props.changeNewPostState();
-                  }}
-                />
               </View>
             </TouchableWithoutFeedback>
           </ScrollView>

@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import { TextInput, View, StyleSheet, Text, Button } from 'react-native';
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Text,
+  Button,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { client } from '../index.ios';
 import gql from 'graphql-tag';
 
@@ -15,16 +26,98 @@ const COMMENT_MUTATION = gql`
   }
 `;
 
+const POST_QUERY = gql`
+  query PostQuery($id: ID!) {
+    post(id: $id) {
+      id
+      description
+      comments {
+        id
+        text
+        user {
+          name
+        }
+      }
+    }
+  }
+`;
+
+const NEW_COMMENTS_SUBSCRIPTION = gql`
+  subscription {
+    newComment {
+      id
+      text
+      post {
+        id
+      }
+      user {
+        name
+      }
+    }
+  }
+`;
+
 export default class CreateComments extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
+      postId: '',
+      postDescription: '',
+      comments: [],
       text: '',
     };
+    this.updateFeed = this.updateFeed.bind(this);
+    this._subscribeToNewComments = this._subscribeToNewComments.bind(this);
+  }
+
+  async componentDidMount() {
+    try {
+      //query from db
+      const { data } = await client.query({
+        query: POST_QUERY,
+        variables: {
+          id: this.props.commentsForPostId,
+        },
+        fetchPolicy: 'network-only',
+      });
+
+      //set to local state
+      this.setState({
+        postDescription: data.post.description,
+        postId: data.post.id,
+        comments: data.post.comments,
+      });
+
+      //register subscription
+      this._subscribeToNewComments(this.updateFeed);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  updateFeed(newComment) {
+    if (newComment.post.id === this.state.postId) {
+      let prevComments = this.state.comments;
+      this.setState({ comments: [...prevComments, newComment] });
+    }
+  }
+
+  _subscribeToNewComments(updateFeed) {
+    console.log('entered comments sub--------------------');
+    client
+      .subscribe({
+        query: NEW_COMMENTS_SUBSCRIPTION,
+      })
+      .subscribe({
+        next({ data }) {
+          console.log('data received from subscribe', data);
+          updateFeed(data.newComment);
+        },
+      });
   }
 
   async addComment(postId) {
-    await client.mutate({
+    let { data } = await client.mutate({
       mutation: COMMENT_MUTATION,
       variables: {
         postId: postId,
@@ -33,27 +126,41 @@ export default class CreateComments extends Component {
     });
     this.setState({
       text: '',
+      // comments: [...this.state.comments, data.comment],
     });
   }
 
   render() {
     return (
-      <View>
-        <TextInput
-          multiline={true}
-          numberOfLines={4}
-          onChangeText={text => this.setState({ text })}
-          placeholder="Add your comments here..."
-          value={this.state.text}
-          style={styles.input}
-        />
-        <Button
-          title="Add Comments"
-          onPress={() => {
-            this.addComment(this.props.post.id);
-          }}
-        />
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        style={{ flex: 1 }}
+      >
+        <Text>POST: {this.state.postDescription}</Text>
+        {this.state.comments.map(comment => (
+          <Text key={comment.id}>
+            {comment.text} (by {comment.user.name})
+          </Text>
+        ))}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1 }}>
+            <TextInput
+              multiline={true}
+              numberOfLines={4}
+              onChangeText={text => this.setState({ text })}
+              placeholder="Add your comments here..."
+              value={this.state.text}
+              style={styles.input}
+            />
+            <Button
+              title="Add Comments"
+              onPress={() => {
+                this.addComment(this.props.commentsForPostId);
+              }}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     );
   }
 }
