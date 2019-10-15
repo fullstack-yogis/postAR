@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native';
 
 import {
   ViroARScene,
@@ -98,6 +98,7 @@ const NEW_POSTS_SUBSCRIPTION = gql`
         id
         text
         createdAt
+        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -298,7 +299,7 @@ class HelloWorldSceneAR extends Component {
 
   async createPost(post) {
     try {
-      console.log('-------post', post)
+      console.log('-------post', post);
       const { data } = await client.mutate({
         mutation: POST_MUTATION,
         variables: post,
@@ -354,6 +355,7 @@ class HelloWorldSceneAR extends Component {
                     this.props.sceneNavigator.viroAppProps.toggleCreateComments(
                       post.id
                     );
+                    this.props.sceneNavigator.viroAppProps.toggleNmsg('');
                   }}
                 />
                 {post.comments.map((comment, idx) => {
@@ -365,10 +367,14 @@ class HelloWorldSceneAR extends Component {
 
                   return (
                     <ViroText
-                      text={(comment.user.name + ': ' + comment.text) || ''}
+                      text={comment.user.name + ': ' + comment.text || ''}
                       style={styles.comment}
                       extrusionDepth={8}
-                      materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
+                      materials={[
+                        'frontMaterial',
+                        'backMaterial',
+                        'sideMaterial',
+                      ]}
                       key={comment.id}
                       rotation={[-90, 0, 0]}
                       position={commentPosnArray}
@@ -392,8 +398,8 @@ var styles = StyleSheet.create({
   //   color: '#FFFFFF',
   // },
   comment: {
-    fontSize: 10
-  }
+    fontSize: 10,
+  },
 });
 
 // ViroMaterials.createMaterials({
