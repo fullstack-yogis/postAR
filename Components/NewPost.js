@@ -77,6 +77,7 @@ export default class NewPost extends Component {
                   <Switch
                     style={{
                       transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+
                     }}
                     onValueChange={this.togglePrivacy}
                     value={this.state.private}
