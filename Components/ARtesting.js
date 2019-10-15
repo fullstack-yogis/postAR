@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
+import {StyleSheet} from 'react-native'
 
 import {
   ViroARScene,
@@ -280,7 +281,6 @@ class HelloWorldSceneAR extends Component {
       // this.props.sceneNavigator.viroAppProps.toggleNmsg('DRAG_POST'); //infinite loop
       return (
         <ViroText
-          style={{ color: '#258308' }}
           text={this.props.sceneNavigator.viroAppProps.newPostText}
           height={0.5}
           width={0.5}
@@ -311,6 +311,7 @@ class HelloWorldSceneAR extends Component {
 
   async createPost(post) {
     try {
+      console.log('-------post', post)
       const { data } = await client.mutate({
         mutation: POST_MUTATION,
         variables: post,
@@ -356,6 +357,7 @@ class HelloWorldSceneAR extends Component {
               <ViroFlexView key={post.id}>
                 <ViroText
                   text={post.description || ''}
+                  style={styles.viroFont}
                   extrusionDepth={8}
                   materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
                   rotation={[-90, 0, 0]}
@@ -376,7 +378,10 @@ class HelloWorldSceneAR extends Component {
 
                   return (
                     <ViroText
-                      text={comment.text || ''}
+                      text={(comment.user.name + ': ' + comment.text) || ''}
+                      style={styles.comment}
+                      extrusionDepth={8}
+                      materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
                       key={comment.id}
                       rotation={[-90, 0, 0]}
                       position={commentPosnArray}
@@ -395,15 +400,36 @@ class HelloWorldSceneAR extends Component {
 
 // export default withApollo(HelloWorldSceneAR);
 
+var styles = StyleSheet.create({
+  // viroFont: {
+  //   color: '#FFFFFF',
+  // },
+  comment: {
+    fontSize: 10
+  }
+});
+
+// ViroMaterials.createMaterials({
+//   frontMaterial: {
+//     diffuseColor: Color.WHITE,
+//   },
+//   backMaterial: {
+//     diffuseColor: Color.BLUE,
+//   },
+//   sideMaterial: {
+//     diffuseColor: Color.RED,
+//   },
+// });
+
 ViroMaterials.createMaterials({
   frontMaterial: {
-    diffuseColor: '#FFFFFF',
+    diffuseColor: 'white',
   },
   backMaterial: {
-    diffuseColor: '#FF0000',
+    diffuseColor: 'red',
   },
   sideMaterial: {
-    diffuseColor: '#0000FF',
+    diffuseColor: 'blue',
   },
 });
 

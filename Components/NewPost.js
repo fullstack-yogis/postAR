@@ -51,7 +51,6 @@ export default class NewPost extends Component {
                   NEW POST
                 </Text>
                 <TextInput
-                  multiline
                   style={{ borderWidth: 1, padding: 10 }}
                   placeholder="Type new post here!"
                   onChangeText={text => this.setState({ text })}
