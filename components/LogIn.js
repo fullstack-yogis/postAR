@@ -5,9 +5,13 @@ import {
   View,
   Text,
   TextInput,
+  ImageBackground,
   Button,
   TouchableOpacity,
+  Image,
   AsyncStorage,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -69,63 +73,96 @@ export default class Login extends Component {
     }
     const { login, email, password, name } = this.state;
     return (
-      <View>
-        <Text>{login ? 'Login' : 'Sign Up'}</Text>
-
-        <View>
-          {!login && (
-            <TextInput
-              // multiline={true}
-              style={styles.textInput}
-              placeholder="Your name"
-              onChangeText={name => this.setState({ name })}
-              value={this.state.name}
+      <ImageBackground
+        source={require('../js/res/loginbackground.jpg')}
+        style={{ width: '100%', height: '110%' }}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: 70,
+            }}
+          >
+            <Image
+              style={{ flex: 1, width: '80%', height: '80%' }}
+              source={require('../js/res/logo.png')}
             />
-          )}
-          <TextInput
-            // multiline={true}
-            style={styles.textInput}
-            placeholder="Your email address"
-            onChangeText={email => this.setState({ email })}
-            value={this.state.email}
-          />
-          <TextInput
-            // multiline={true}
-            style={styles.textInput}
-            placeholder="Your password"
-            onChangeText={password => this.setState({ password })}
-            value={this.state.password}
-          />
-        </View>
 
-        <View>
-          <View>
-            <Mutation
-              mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
-              variables={{ email, password, name }}
-              onCompleted={data => this._confirm(data)}
-            >
-              {mutation => (
-                <Button
-                  title={login ? 'login' : 'create account'}
-                  color="#f194ff"
-                  onPress={mutation}
+            <View style={{ flex: 1, paddingTop: 0 }}>
+              {!login && (
+                <TextInput
+                  // multiline={true}
+                  style={styles.textInput}
+                  placeholder="Name"
+                  clearButtonMode="always"
+                  onChangeText={name => this.setState({ name })}
+                  value={this.state.name}
                 />
               )}
-            </Mutation>
+              <TextInput
+                // multiline={true}
+                style={styles.textInput}
+                placeholder="Email"
+                keyboardType="email-address"
+                clearButtonMode="always"
+                onChangeText={email => this.setState({ email })}
+                value={this.state.email}
+              />
+              <TextInput
+                // multiline={true}
+                style={styles.textInput}
+                placeholder="Password"
+                secureTextEntry={true}
+                clearButtonMode="always"
+                onChangeText={password => this.setState({ password })}
+                value={this.state.password}
+              />
+            </View>
 
-            <Button
-              title={
-                login
-                  ? 'need to create an account?'
-                  : 'already have an account?'
-              }
-              color="#f194ff"
-              onPress={() => this.setState({ login: !login })}
-            />
+            <View style={{ flex: 1, paddingBottom: 200 }}>
+              <View>
+                <Mutation
+                  mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
+                  variables={{ email, password, name }}
+                  onCompleted={data => this._confirm(data)}
+                >
+                  {mutation => (
+                    <TouchableOpacity
+                      style={styles.loginScreenButton}
+                      onPress={mutation}
+                      underlayColor="#fff"
+                    >
+                      <Text style={styles.loginText}>
+                        {login ? 'LOG IN' : 'SIGN UP'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </Mutation>
+
+                <Text
+                  style={{ alignSelf: 'center', fontSize: 18, color: 'grey' }}
+                >
+                  OR
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.loginScreenButton}
+                  onPress={() => this.setState({ login: !login })}
+                  underlayColor="#fff"
+                >
+                  <Text style={styles.loginText}>
+                    {login ? 'CREATE AN ACCOUNT' : 'LOG IN'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
+        </TouchableWithoutFeedback>
+      </ImageBackground>
     );
   }
 }
@@ -137,14 +174,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loginInput: {
+  textInput: {
     fontStyle: 'italic',
+    fontSize: 18,
     color: 'grey',
+    backgroundColor: 'white',
     marginBottom: 10,
-    height: 40,
+    height: 50,
+    width: 275,
     paddingLeft: 20,
     paddingRight: 20,
+    borderRadius: 15,
     borderColor: '#eeeeee',
     borderWidth: 1,
+  },
+  loginScreenButton: {
+    justifyContent: 'center',
+    marginTop: 5,
+    paddingTop: 10,
+    marginBottom: 5,
+    paddingBottom: 10,
+    height: 50,
+    width: 275,
+    backgroundColor: '#ADD8E6',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#fff',
+  },
+  loginText: {
+    fontSize: 18,
+    color: '#fff',
+    textAlign: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
   },
 });
