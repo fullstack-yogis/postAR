@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native';
 
 import {
   ViroARScene,
@@ -27,6 +27,7 @@ const FEED_QUERY = gql`
       xDistance
       yDistance
       zDistance
+      rotation
       comments {
         id
         text
@@ -91,6 +92,7 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+      rotation
       postPostedBy {
         id
       }
@@ -133,7 +135,7 @@ class HelloWorldSceneAR extends Component {
       planeVisibility: true,
       imageVisibility: false,
       pauseUpdates: false,
-      dragPos: [0, 0, 0], // postition xyz
+      dragPos: [0.001, 0.001, 0.001], // postition xyz
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
@@ -257,7 +259,7 @@ class HelloWorldSceneAR extends Component {
         zDistance: this.state.dragPos[2],
         height: 0.1,
         width: 0.1,
-        rotation: 0.1,
+        rotation: this.state.rotation[2],
       });
       console.log('newPost after pin and save', newPost);
       if (newPost.privacy === false) {
@@ -288,9 +290,6 @@ class HelloWorldSceneAR extends Component {
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
           position={[0, 0, 0]}
-          visible={true}
-          // dragType="FixedDistanceOrigin"
-          // onDrag={this.state.dragAble ? this._onDrag : null}
           onDrag={this._onDrag}
           // onClick={this.pinAndSave}
           onClickState={stateValue => {
@@ -304,6 +303,8 @@ class HelloWorldSceneAR extends Component {
               }
             }
           }}
+          // dragType="FixedDistanceOrigin"
+          // onDrag={this.state.dragAble ? this._onDrag : null}
         />
       );
     }
@@ -311,7 +312,7 @@ class HelloWorldSceneAR extends Component {
 
   async createPost(post) {
     try {
-      console.log('-------post', post)
+      console.log('-------post', post);
       const { data } = await client.mutate({
         mutation: POST_MUTATION,
         variables: post,
@@ -353,6 +354,7 @@ class HelloWorldSceneAR extends Component {
               post.yDistance - 0.15,
               post.zDistance + 1.6,
             ];
+            let rotation = [-90, 0, post.rotation];
             return (
               <ViroFlexView key={post.id}>
                 <ViroText
@@ -360,7 +362,7 @@ class HelloWorldSceneAR extends Component {
                   style={styles.viroFont}
                   extrusionDepth={8}
                   materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-                  rotation={[-90, 0, 0]}
+                  rotation={rotation}
                   position={posnArray}
                   onClick={() => {
                     // console.log('clicking');
@@ -378,12 +380,16 @@ class HelloWorldSceneAR extends Component {
 
                   return (
                     <ViroText
-                      text={(comment.user.name + ': ' + comment.text) || ''}
+                      text={comment.user.name + ': ' + comment.text || ''}
                       style={styles.comment}
                       extrusionDepth={8}
-                      materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
+                      materials={[
+                        'frontMaterial',
+                        'backMaterial',
+                        'sideMaterial',
+                      ]}
                       key={comment.id}
-                      rotation={[-90, 0, 0]}
+                      rotation={rotation}
                       position={commentPosnArray}
                     />
                   );
@@ -405,8 +411,8 @@ var styles = StyleSheet.create({
   //   color: '#FFFFFF',
   // },
   comment: {
-    fontSize: 10
-  }
+    fontSize: 10,
+  },
 });
 
 // ViroMaterials.createMaterials({
