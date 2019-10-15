@@ -27,6 +27,7 @@ const FEED_QUERY = gql`
       xDistance
       yDistance
       zDistance
+      rotation
       comments {
         id
         text
@@ -38,42 +39,6 @@ const FEED_QUERY = gql`
           name
         }
       }
-    }
-  }
-`;
-
-//for mutating gql
-const POST_MUTATION = gql`
-  mutation PostMutation(
-    $description: String!
-    $privacy: Boolean!
-    $xDistance: Float!
-    $yDistance: Float!
-    $zDistance: Float!
-    $height: Float!
-    $width: Float!
-    $rotation: Float!
-  ) {
-    post(
-      description: $description
-      privacy: $privacy
-      xDistance: $xDistance
-      yDistance: $yDistance
-      zDistance: $zDistance
-      height: $height
-      width: $width
-      rotation: $rotation
-    ) {
-      id
-      createdAt
-      privacy
-      xDistance
-      yDistance
-      zDistance
-      description
-      height
-      width
-      rotation
     }
   }
 `;
@@ -91,6 +56,7 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+      rotation
       postPostedBy {
         id
       }
@@ -134,16 +100,13 @@ class HelloWorldSceneAR extends Component {
       planeVisibility: true,
       imageVisibility: false,
       pauseUpdates: false,
-      dragPos: [0, 0, 0], // postition xyz
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
+      clickTime: null,
     };
     this._onTap = this._onTap.bind(this);
     this._onDrag = this._onDrag.bind(this);
-    this.pinAndSave = this.pinAndSave.bind(this);
-    this.createPost = this.createPost.bind(this);
-
     this.renderNewPost = this.renderNewPost.bind(this);
     this.updateFeed = this.updateFeed.bind(this);
     this._subscribeToNewPosts = this._subscribeToNewPosts.bind(this);
@@ -239,38 +202,7 @@ class HelloWorldSceneAR extends Component {
   }
 
   _onDrag(d, source) {
-    this.setState({ dragPos: d });
-  }
-
-  //when the post is clicked, then it gets fixed and saved
-  async pinAndSave() {
-    // if (this.state.dragAble) {
-    try {
-      //post to DB function here
-      console.log('this state', this.state);
-      let newPost = await this.createPost({
-        description: this.props.sceneNavigator.viroAppProps.newPostText,
-        privacy: this.props.sceneNavigator.viroAppProps.privacy,
-        xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1],
-        zDistance: this.state.dragPos[2],
-        height: 0.1,
-        width: 0.1,
-        rotation: 0.1,
-      });
-      console.log('newPost after pin and save', newPost);
-      if (newPost.privacy === false) {
-        this.props.sceneNavigator.viroAppProps.resetNewPostText();
-      } else {
-        this.updateFeed(newPost);
-        this.props.sceneNavigator.viroAppProps.resetNewPostText();
-      }
-
-      // this.setState({ dragAble: false });
-    } catch (e) {
-      console.log('pinAndSave error ' + e);
-    }
-    // }
+    this.props.sceneNavigator.viroAppProps.updateAppState({ dragPos: d });
   }
 
   renderNewPost() {
@@ -283,34 +215,31 @@ class HelloWorldSceneAR extends Component {
           text={this.props.sceneNavigator.viroAppProps.newPostText}
           height={0.5}
           width={0.5}
-          rotation={[-90, 0, 0]}
+          rotation={this.props.sceneNavigator.viroAppProps.rotation}
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-          position={[0, 0.3, 0]}
-          visible={true}
-          dragType="FixedToWorld"
-          // onDrag={this.state.dragAble ? this._onDrag : null}
+          position={[0, 0, 0]}
           onDrag={this._onDrag}
-          onClick={this.pinAndSave}
+          // onClick={this.pinAndSave}
+          onClickState={stateValue => {
+            if (stateValue === 1) {
+              this.setState({ clickTime: Date.now() });
+            } else if (stateValue === 2) {
+              if (Date.now() - this.state.clickTime < 200) {
+                this.props.sceneNavigator.viroAppProps.updateAppState({
+                  rotation: [
+                    -90,
+                    0,
+                    this.props.sceneNavigator.viroAppProps.rotation[2] + 45,
+                  ],
+                });
+              }
+            }
+          }}
+          // dragType="FixedDistanceOrigin"
+          // onDrag={this.state.dragAble ? this._onDrag : null}
         />
       );
-    }
-  }
-
-  async createPost(post) {
-    try {
-      console.log('-------post', post);
-      const { data } = await client.mutate({
-        mutation: POST_MUTATION,
-        variables: post,
-      });
-      // console.log('data is ', data);
-      // this.setState({
-      //   allPosts: [...this.state.allPosts, data.post],
-      // });
-      return data.post;
-    } catch (e) {
-      console.log(e);
     }
   }
 
@@ -341,6 +270,7 @@ class HelloWorldSceneAR extends Component {
               post.yDistance - 0.15,
               post.zDistance + 1.6,
             ];
+            let rotation = [-90, 0, post.rotation];
             return (
               <ViroFlexView key={post.id}>
                 <ViroText
@@ -348,7 +278,7 @@ class HelloWorldSceneAR extends Component {
                   style={styles.viroFont}
                   extrusionDepth={8}
                   materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-                  rotation={[-90, 0, 0]}
+                  rotation={rotation}
                   position={posnArray}
                   onClick={() => {
                     // console.log('clicking');
@@ -376,7 +306,7 @@ class HelloWorldSceneAR extends Component {
                         'sideMaterial',
                       ]}
                       key={comment.id}
-                      rotation={[-90, 0, 0]}
+                      rotation={rotation}
                       position={commentPosnArray}
                     />
                   );

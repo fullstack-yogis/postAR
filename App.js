@@ -16,6 +16,8 @@ import { ViroARSceneNavigator } from 'react-viro';
 
 import { APP_SECRET } from './front_secrets';
 import { getMarkupFromTree } from 'react-apollo';
+import { client } from './index.ios';
+import gql from 'graphql-tag';
 
 let sharedProps = {
   apiKey: APP_SECRET,
@@ -23,6 +25,43 @@ let sharedProps = {
 
 // let InitialARScene = require('./components/HelloWorldSceneAR');
 let InitialARScene = require('./components/ARtesting');
+
+//moving posting to APP
+//for mutating gql
+const POST_MUTATION = gql`
+  mutation PostMutation(
+    $description: String!
+    $privacy: Boolean!
+    $xDistance: Float!
+    $yDistance: Float!
+    $zDistance: Float!
+    $height: Float!
+    $width: Float!
+    $rotation: Float!
+  ) {
+    post(
+      description: $description
+      privacy: $privacy
+      xDistance: $xDistance
+      yDistance: $yDistance
+      zDistance: $zDistance
+      height: $height
+      width: $width
+      rotation: $rotation
+    ) {
+      id
+      createdAt
+      privacy
+      xDistance
+      yDistance
+      zDistance
+      description
+      height
+      width
+      rotation
+    }
+  }
+`;
 
 export default class postAR extends Component {
   constructor() {
@@ -41,6 +80,9 @@ export default class postAR extends Component {
       createPost: false,
       createComments: false,
       commentsForPostId: '',
+      postOrPin: 'POST',
+      dragPos: [0.001, 0.001, 0.001], // postition xyz
+      rotation: [-90, 0, 0],
     };
     this.logout = this.logout.bind(this);
     this.changeNewPostState = this.changeNewPostState.bind(this);
@@ -58,6 +100,56 @@ export default class postAR extends Component {
     this.resetNewPostText = this.resetNewPostText.bind(this);
     this.toggleCreateComments = this.toggleCreateComments.bind(this);
     this.turnOffCreateComments = this.turnOffCreateComments.bind(this);
+    this.pinAndSave = this.pinAndSave.bind(this);
+    this.createPost = this.createPost.bind(this);
+    this.updateAppState = this.updateAppState.bind(this);
+  }
+  //send this function to AR so that it can be called to change state here
+  updateAppState(newState) {
+    this.setState(newState);
+  }
+
+  //when the post is clicked, then it gets fixed and saved
+  async pinAndSave() {
+    // if (this.state.dragAble) {
+    try {
+      //post to DB function here
+      let newPost = await this.createPost({
+        description: this.state.newPostText,
+        privacy: this.state.privacy,
+        xDistance: this.state.dragPos[0],
+        yDistance: this.state.dragPos[1],
+        zDistance: this.state.dragPos[2],
+        height: 0.1,
+        width: 0.1,
+        rotation: this.state.rotation[2],
+      });
+      this.setState({ rotation: [-90, 0, 0] });
+      if (newPost.privacy === false) {
+        this.resetNewPostText();
+      } else {
+        //need to send private posts to AR world
+        //TODO
+        this.updateFeed(newPost);
+        this.resetNewPostText();
+      }
+
+      // this.setState({ dragAble: false });
+    } catch (e) {
+      console.log('pinAndSave error ' + e);
+    }
+    // }
+  }
+  async createPost(post) {
+    try {
+      const { data } = await client.mutate({
+        mutation: POST_MUTATION,
+        variables: post,
+      });
+      return data.post;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   // toggle create NewPost page state
@@ -67,9 +159,13 @@ export default class postAR extends Component {
 
   // get the new post text (description)
   updateNewPostTextAndPriv(text, privacy) {
+    //now toggle the post button to show 'Pin'
+    //the 'pin' button should also now work to send the data to database
+    //then change back to 'post' and 'post' function
     this.setState({
       newPostText: text,
       privacy,
+      postOrPin: 'PIN',
     });
   }
 
@@ -92,7 +188,7 @@ export default class postAR extends Component {
           }}
         >
           <Button
-            title="POST"
+            title={this.state.postOrPin}
             onPress={() => {
               this.toggleCreatePost();
               this.toggleNmsg('');
@@ -195,6 +291,8 @@ export default class postAR extends Component {
             privacy: this.state.privacy,
             resetNewPostText: this.resetNewPostText,
             toggleCreateComments: this.toggleCreateComments,
+            updateAppState: this.updateAppState,
+            rotation: this.state.rotation,
           }}
         />
       );
@@ -217,7 +315,14 @@ export default class postAR extends Component {
 
   // to toggle page to show when 'POST' button in menu is pressed
   toggleCreatePost() {
-    this.setState({ createPost: !this.state.createPost });
+    if (this.state.postOrPin === 'POST') {
+      this.setState({ createPost: !this.state.createPost });
+    } else if (this.state.postOrPin === 'PIN') {
+      console.log('call the database');
+      this.pinAndSave();
+      //then change the state to POST
+      this.setState({ postOrPin: 'POST' });
+    }
   }
 
   // minimizes create post component (meant for home button)
