@@ -93,26 +93,17 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       width
       postPostedBy {
         id
-<<<<<<< HEAD
-        comments {
-=======
       }
       comments {
         id
         text
         createdAt
+        # we already have postId from line 81, why query it again?
         post {
->>>>>>> 9f9a8862d7a0d3e886bc06084ff004b8300be368
           id
-          text
-          createdAt
-          # we already have postId from line 81, why query it again?
-          post {
-            id
-          }
-          user {
-            name
-          }
+        }
+        user {
+          name
         }
       }
     }
