@@ -136,15 +136,19 @@ export default class Login extends Component {
                   {mutation => (
                     <TouchableOpacity
                       style={styles.loginScreenButton}
-                      onPress={() => {
-                        if (
-                          // this.state.name &&
-                          this.state.email &&
-                          this.state.password
-                        ) {
-                          mutation();
-                        }
-                      }}
+                      onPress={
+                        login
+                          ? mutation
+                          : () => {
+                              if (
+                                this.state.name &&
+                                this.state.email &&
+                                this.state.password
+                              ) {
+                                mutation();
+                              }
+                            }
+                      }
                       underlayColor="#fff"
                     >
                       <Text style={styles.loginText}>
