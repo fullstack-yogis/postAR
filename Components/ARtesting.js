@@ -89,11 +89,11 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       width
       postPostedBy {
         id
+      }
       comments {
         id
         text
         createdAt
-        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -133,6 +133,8 @@ class HelloWorldSceneAR extends Component {
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
+      rotation: [-90, 0, 0],
+      clickTime: null,
     };
     this._onTap = this._onTap.bind(this);
     this._onDrag = this._onDrag.bind(this);
@@ -246,9 +248,9 @@ class HelloWorldSceneAR extends Component {
       let newPost = await this.createPost({
         description: this.props.sceneNavigator.viroAppProps.newPostText,
         privacy: this.props.sceneNavigator.viroAppProps.privacy,
-        xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1] + 0.3,
-        zDistance: this.state.dragPos[2],
+        xDistance: this.state.dragPos[0] - 0.1,
+        yDistance: this.state.dragPos[1],
+        zDistance: this.state.dragPos[2] + 0.6,
         height: 0.1,
         width: 0.1,
       });
@@ -278,15 +280,26 @@ class HelloWorldSceneAR extends Component {
           text={this.props.sceneNavigator.viroAppProps.newPostText}
           height={0.5}
           width={0.5}
-          rotation={[-90, 0, 0]}
+          rotation={this.state.rotation}
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-          position={[0, 0.3, 0]}
+          position={[0, 0, 0]}
           visible={true}
-          dragType="FixedToWorld"
+          // dragType="FixedDistanceOrigin"
           // onDrag={this.state.dragAble ? this._onDrag : null}
           onDrag={this._onDrag}
-          onClick={this.pinAndSave}
+          // onClick={this.pinAndSave}
+          onClickState={stateValue => {
+            if (stateValue === 1) {
+              this.setState({ clickTime: Date.now() });
+            } else if (stateValue === 2) {
+              if (Date.now() - this.state.clickTime < 200) {
+                this.setState(prevState => ({
+                  rotation: [-90, 0, prevState.rotation[2] + 45],
+                }));
+              }
+            }
+          }}
         />
       );
     }
@@ -330,7 +343,11 @@ class HelloWorldSceneAR extends Component {
           // dragType="FixedToPlane"
         >
           {this.state.allPosts.map(post => {
-            let posnArray = [post.xDistance, post.yDistance, post.zDistance];
+            let posnArray = [
+              post.xDistance + 0.4,
+              post.yDistance - 0.15,
+              post.zDistance + 0.35,
+            ];
             return (
               <ViroFlexView key={post.id}>
                 <ViroText
@@ -348,9 +365,9 @@ class HelloWorldSceneAR extends Component {
                 />
                 {post.comments.map((comment, idx) => {
                   let commentPosnArray = [
-                    post.xDistance,
-                    0.2,
-                    post.zDistance + 0.1 * (idx + 1),
+                    post.xDistance + 0.4,
+                    post.yDistance - 0.15,
+                    post.zDistance + 0.1 * (idx + 1) + 0.35,
                   ];
 
                   return (
