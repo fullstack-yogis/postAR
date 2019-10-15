@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
+import {StyleSheet} from 'react-native'
 
 import {
   ViroARScene,
@@ -49,6 +50,7 @@ const POST_MUTATION = gql`
     $xDistance: Float!
     $yDistance: Float!
     $zDistance: Float!
+    $rotation: Float!
     $height: Float!
     $width: Float!
   ) {
@@ -56,6 +58,7 @@ const POST_MUTATION = gql`
       description: $description
       privacy: $privacy
       xDistance: $xDistance
+      rotation: $rotation
       yDistance: $yDistance
       zDistance: $zDistance
       height: $height
@@ -89,11 +92,11 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       width
       postPostedBy {
         id
+      }
       comments {
         id
         text
         createdAt
-        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -249,6 +252,7 @@ class HelloWorldSceneAR extends Component {
         xDistance: this.state.dragPos[0],
         yDistance: this.state.dragPos[1] + 0.3,
         zDistance: this.state.dragPos[2],
+        rotation: 0,
         height: 0.1,
         width: 0.1,
       });
@@ -274,7 +278,6 @@ class HelloWorldSceneAR extends Component {
       // this.props.sceneNavigator.viroAppProps.toggleNmsg('DRAG_POST'); //infinite loop
       return (
         <ViroText
-          style={{ color: '#258308' }}
           text={this.props.sceneNavigator.viroAppProps.newPostText}
           height={0.5}
           width={0.5}
@@ -294,6 +297,7 @@ class HelloWorldSceneAR extends Component {
 
   async createPost(post) {
     try {
+      console.log('-------post', post)
       const { data } = await client.mutate({
         mutation: POST_MUTATION,
         variables: post,
@@ -335,6 +339,7 @@ class HelloWorldSceneAR extends Component {
               <ViroFlexView key={post.id}>
                 <ViroText
                   text={post.description || ''}
+                  style={styles.viroFont}
                   extrusionDepth={8}
                   materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
                   rotation={[-90, 0, 0]}
@@ -349,13 +354,16 @@ class HelloWorldSceneAR extends Component {
                 {post.comments.map((comment, idx) => {
                   let commentPosnArray = [
                     post.xDistance,
-                    0.2,
-                    post.zDistance + 0.1 * (idx + 1),
+                    post.yDistance,
+                    post.zDistance + 0.1 + 0.1 * (idx + 1),
                   ];
 
                   return (
                     <ViroText
-                      text={comment.text || ''}
+                      text={(comment.user.name + ': ' + comment.text) || ''}
+                      style={styles.comment}
+                      extrusionDepth={8}
+                      materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
                       key={comment.id}
                       rotation={[-90, 0, 0]}
                       position={commentPosnArray}
@@ -374,15 +382,36 @@ class HelloWorldSceneAR extends Component {
 
 // export default withApollo(HelloWorldSceneAR);
 
+var styles = StyleSheet.create({
+  // viroFont: {
+  //   color: '#FFFFFF',
+  // },
+  comment: {
+    fontSize: 10
+  }
+});
+
+// ViroMaterials.createMaterials({
+//   frontMaterial: {
+//     diffuseColor: Color.WHITE,
+//   },
+//   backMaterial: {
+//     diffuseColor: Color.BLUE,
+//   },
+//   sideMaterial: {
+//     diffuseColor: Color.RED,
+//   },
+// });
+
 ViroMaterials.createMaterials({
   frontMaterial: {
-    diffuseColor: '#FFFFFF',
+    diffuseColor: 'white',
   },
   backMaterial: {
-    diffuseColor: '#FF0000',
+    diffuseColor: 'red',
   },
   sideMaterial: {
-    diffuseColor: '#0000FF',
+    diffuseColor: 'blue',
   },
 });
 
