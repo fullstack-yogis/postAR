@@ -64,6 +64,7 @@ const NEW_POSTS_SUBSCRIPTION = gql`
         id
         text
         createdAt
+        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -284,6 +285,7 @@ class HelloWorldSceneAR extends Component {
                     this.props.sceneNavigator.viroAppProps.toggleCreateComments(
                       post.id
                     );
+                    this.props.sceneNavigator.viroAppProps.toggleNmsg('');
                   }}
                 />
                 {post.comments.map((comment, idx) => {

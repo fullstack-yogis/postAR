@@ -84,6 +84,7 @@ export default class postAR extends Component {
       dragPos: [0.001, 0.001, 0.001], // postition xyz
       rotation: [-90, 0, 0],
     };
+    this.logout = this.logout.bind(this);
     this.changeNewPostState = this.changeNewPostState.bind(this);
     this.updateNewPostTextAndPriv = this.updateNewPostTextAndPriv.bind(this);
     this.renderNotification = this.renderNotification.bind(this);
@@ -188,7 +189,10 @@ export default class postAR extends Component {
         >
           <Button
             title={this.state.postOrPin}
-            onPress={this.toggleCreatePost}
+            onPress={() => {
+              this.toggleCreatePost();
+              this.toggleNmsg('');
+            }}
             style={{ color: 'white' }}
           />
           <Button
@@ -197,12 +201,15 @@ export default class postAR extends Component {
             onPress={() => {
               this.turnOffCreatePost();
               this.turnOffCreateComments();
+              this.toggleNmsg('');
             }}
           />
           <Button
             title="LOGOUT"
             style={{ color: 'white' }}
-            onPress={this.logout}
+            onPress={() => {
+              this.logout();
+            }}
           />
         </View>
       );
@@ -210,8 +217,9 @@ export default class postAR extends Component {
   }
 
   //logout function to remove token from asyncStorage and redirect to login page
-  logout = async () => {
+  async logout() {
     await AsyncStorage.removeItem(AUTH_TOKEN);
+    const token = await AsyncStorage.getItem(AUTH_TOKEN);
     this.setState({
       currentView: 'login',
       token: '',
@@ -225,7 +233,7 @@ export default class postAR extends Component {
       createComments: false,
       commentsForPostId: '',
     });
-  };
+  }
 
   // toggle create new post menu (on top of screen)
   changeMenuState() {
@@ -361,10 +369,7 @@ export default class postAR extends Component {
   async componentDidMount() {
     // await AsyncStorage.removeItem(AUTH_TOKEN)
     const token = await AsyncStorage.getItem(AUTH_TOKEN);
-    console.log(
-      'component mounted get token from asyncStorage🤩🤩🤩🤩🤩🤩',
-      token
-    );
+
     if (token) {
       this.setUserTokenAndView(token, 'allPosts');
     }
