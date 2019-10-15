@@ -103,14 +103,12 @@ export default class CreateComments extends Component {
   }
 
   _subscribeToNewComments(updateFeed) {
-    console.log('entered comments sub--------------------');
     client
       .subscribe({
         query: NEW_COMMENTS_SUBSCRIPTION,
       })
       .subscribe({
         next({ data }) {
-          console.log('data received from subscribe', data);
           updateFeed(data.newComment);
         },
       });

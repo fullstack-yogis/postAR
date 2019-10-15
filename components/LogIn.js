@@ -65,8 +65,11 @@ export default class Login extends Component {
 
   render() {
     if (this.props.token) {
+      console.log('token at login', this.props.token);
       this.props.changeCurrentView('allPosts');
     }
+    console.log('token before login', this.props.token);
+
     const { login, email, password, name } = this.state;
     return (
       <View>
@@ -109,7 +112,15 @@ export default class Login extends Component {
                 <Button
                   title={login ? 'login' : 'create account'}
                   color="#f194ff"
-                  onPress={mutation}
+                  onPress={() => {
+                    if (
+                      this.state.name &&
+                      this.state.email &&
+                      this.state.password
+                    ) {
+                      mutation();
+                    }
+                  }}
                 />
               )}
             </Mutation>
