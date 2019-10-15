@@ -358,7 +358,7 @@ class HelloWorldSceneAR extends Component {
                   let commentPosnArray = [
                     post.xDistance + 0.1,
                     post.yDistance - 0.15,
-                    post.zDistance + 0.1 * (idx + 1) + 1.6,
+                    post.zDistance + 0.1 * (idx + 1) + 1.7,
                   ];
 
                   return (
