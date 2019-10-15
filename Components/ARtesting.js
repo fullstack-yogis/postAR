@@ -50,7 +50,6 @@ const POST_MUTATION = gql`
     $xDistance: Float!
     $yDistance: Float!
     $zDistance: Float!
-    $rotation: Float!
     $height: Float!
     $width: Float!
     $rotation: Float!
@@ -59,7 +58,6 @@ const POST_MUTATION = gql`
       description: $description
       privacy: $privacy
       xDistance: $xDistance
-      rotation: $rotation
       yDistance: $yDistance
       zDistance: $zDistance
       height: $height
@@ -255,7 +253,6 @@ class HelloWorldSceneAR extends Component {
         xDistance: this.state.dragPos[0],
         yDistance: this.state.dragPos[1],
         zDistance: this.state.dragPos[2],
-        rotation: 0,
         height: 0.1,
         width: 0.1,
         rotation: 0.1,
