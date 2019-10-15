@@ -89,16 +89,17 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       width
       postPostedBy {
         id
-      comments {
-        id
-        text
-        createdAt
-        # we already have postId from line 81, why query it again?
-        post {
+        comments {
           id
-        }
-        user {
-          name
+          text
+          createdAt
+          # we already have postId from line 81, why query it again?
+          post {
+            id
+          }
+          user {
+            name
+          }
         }
       }
     }
@@ -350,7 +351,7 @@ class HelloWorldSceneAR extends Component {
                   let commentPosnArray = [
                     post.xDistance,
                     0.2,
-                    post.zDistance + 0.1 * (idx + 1),
+                    post.zDistance + 0.2 + 0.2 * (idx + 1),
                   ];
 
                   return (
@@ -379,7 +380,7 @@ ViroMaterials.createMaterials({
     diffuseColor: '#FFFFFF',
   },
   backMaterial: {
-    diffuseColor: '#FF0000',
+    diffuseColor: '#FFFFFF',
   },
   sideMaterial: {
     diffuseColor: '#0000FF',
