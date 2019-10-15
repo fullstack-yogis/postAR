@@ -285,7 +285,7 @@ class HelloWorldSceneAR extends Component {
           rotation={[-90, 0, 0]}
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-          position={[0, 0, 0]}
+          position={[0, 0.3, 0]}
           visible={true}
           dragType="FixedToWorld"
           // onDrag={this.state.dragAble ? this._onDrag : null}
