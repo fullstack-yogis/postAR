@@ -43,42 +43,6 @@ const FEED_QUERY = gql`
   }
 `;
 
-//for mutating gql
-const POST_MUTATION = gql`
-  mutation PostMutation(
-    $description: String!
-    $privacy: Boolean!
-    $xDistance: Float!
-    $yDistance: Float!
-    $zDistance: Float!
-    $height: Float!
-    $width: Float!
-    $rotation: Float!
-  ) {
-    post(
-      description: $description
-      privacy: $privacy
-      xDistance: $xDistance
-      yDistance: $yDistance
-      zDistance: $zDistance
-      height: $height
-      width: $width
-      rotation: $rotation
-    ) {
-      id
-      createdAt
-      privacy
-      xDistance
-      yDistance
-      zDistance
-      description
-      height
-      width
-      rotation
-    }
-  }
-`;
-
 //subscription query for new posts
 const NEW_POSTS_SUBSCRIPTION = gql`
   subscription {
@@ -135,18 +99,13 @@ class HelloWorldSceneAR extends Component {
       planeVisibility: true,
       imageVisibility: false,
       pauseUpdates: false,
-      dragPos: [0.001, 0.001, 0.001], // postition xyz
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
-      rotation: [-90, 0, 0],
       clickTime: null,
     };
     this._onTap = this._onTap.bind(this);
     this._onDrag = this._onDrag.bind(this);
-    this.pinAndSave = this.pinAndSave.bind(this);
-    this.createPost = this.createPost.bind(this);
-
     this.renderNewPost = this.renderNewPost.bind(this);
     this.updateFeed = this.updateFeed.bind(this);
     this._subscribeToNewPosts = this._subscribeToNewPosts.bind(this);
@@ -242,38 +201,7 @@ class HelloWorldSceneAR extends Component {
   }
 
   _onDrag(d, source) {
-    this.setState({ dragPos: d });
-  }
-
-  //when the post is clicked, then it gets fixed and saved
-  async pinAndSave() {
-    // if (this.state.dragAble) {
-    try {
-      //post to DB function here
-      console.log('this state', this.state);
-      let newPost = await this.createPost({
-        description: this.props.sceneNavigator.viroAppProps.newPostText,
-        privacy: this.props.sceneNavigator.viroAppProps.privacy,
-        xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1],
-        zDistance: this.state.dragPos[2],
-        height: 0.1,
-        width: 0.1,
-        rotation: this.state.rotation[2],
-      });
-      console.log('newPost after pin and save', newPost);
-      if (newPost.privacy === false) {
-        this.props.sceneNavigator.viroAppProps.resetNewPostText();
-      } else {
-        this.updateFeed(newPost);
-        this.props.sceneNavigator.viroAppProps.resetNewPostText();
-      }
-
-      // this.setState({ dragAble: false });
-    } catch (e) {
-      console.log('pinAndSave error ' + e);
-    }
-    // }
+    this.props.sceneNavigator.viroAppProps.updateAppState({ dragPos: d });
   }
 
   renderNewPost() {
@@ -286,7 +214,7 @@ class HelloWorldSceneAR extends Component {
           text={this.props.sceneNavigator.viroAppProps.newPostText}
           height={0.5}
           width={0.5}
-          rotation={this.state.rotation}
+          rotation={this.props.sceneNavigator.viroAppProps.rotation}
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
           position={[0, 0, 0]}
@@ -297,9 +225,13 @@ class HelloWorldSceneAR extends Component {
               this.setState({ clickTime: Date.now() });
             } else if (stateValue === 2) {
               if (Date.now() - this.state.clickTime < 200) {
-                this.setState(prevState => ({
-                  rotation: [-90, 0, prevState.rotation[2] + 45],
-                }));
+                this.props.sceneNavigator.viroAppProps.updateAppState({
+                  rotation: [
+                    -90,
+                    0,
+                    this.props.sceneNavigator.viroAppProps.rotation[2] + 45,
+                  ],
+                });
               }
             }
           }}
@@ -307,23 +239,6 @@ class HelloWorldSceneAR extends Component {
           // onDrag={this.state.dragAble ? this._onDrag : null}
         />
       );
-    }
-  }
-
-  async createPost(post) {
-    try {
-      console.log('-------post', post);
-      const { data } = await client.mutate({
-        mutation: POST_MUTATION,
-        variables: post,
-      });
-      // console.log('data is ', data);
-      // this.setState({
-      //   allPosts: [...this.state.allPosts, data.post],
-      // });
-      return data.post;
-    } catch (e) {
-      console.log(e);
     }
   }
 
