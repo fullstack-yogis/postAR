@@ -145,8 +145,6 @@ export default class CreateComments extends Component {
               </Text>
             ))}
             <TextInput
-              multiline={true}
-              numberOfLines={4}
               onChangeText={text => this.setState({ text })}
               placeholder="Add your comments here..."
               value={this.state.text}

@@ -345,6 +345,7 @@ class HelloWorldSceneAR extends Component {
                     this.props.sceneNavigator.viroAppProps.toggleCreateComments(
                       post.id
                     );
+                    this.props.sceneNavigator.viroAppProps.toggleNmsg('');
                   }}
                 />
                 {post.comments.map((comment, idx) => {

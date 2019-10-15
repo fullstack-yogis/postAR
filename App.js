@@ -68,7 +68,7 @@ export default class postAR extends Component {
   updateNewPostTextAndPriv(text, privacy) {
     this.setState({
       newPostText: text,
-      privacy
+      privacy,
     });
   }
 
@@ -92,7 +92,10 @@ export default class postAR extends Component {
         >
           <Button
             title="POST"
-            onPress={this.toggleCreatePost}
+            onPress={() => {
+              this.toggleCreatePost();
+              this.toggleNmsg('');
+            }}
             style={{ color: 'white' }}
           />
           <Button
@@ -101,6 +104,7 @@ export default class postAR extends Component {
             onPress={() => {
               this.turnOffCreatePost();
               this.turnOffCreateComments();
+              this.toggleNmsg('');
             }}
           />
           <Button
