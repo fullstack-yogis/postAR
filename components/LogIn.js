@@ -95,7 +95,6 @@ export default class Login extends Component {
               source={require('../js/res/logo.png')}
             />
 
-
             <View style={{ flex: 1, paddingTop: 0 }}>
               {!login && (
                 <TextInput
@@ -138,14 +137,14 @@ export default class Login extends Component {
                     <TouchableOpacity
                       style={styles.loginScreenButton}
                       onPress={() => {
-                    if (
-                      this.state.name &&
-                      this.state.email &&
-                      this.state.password
-                    ) {
-                      mutation();
-                    }
-                  }}
+                        if (
+                          // this.state.name &&
+                          this.state.email &&
+                          this.state.password
+                        ) {
+                          mutation();
+                        }
+                      }}
                       underlayColor="#fff"
                     >
                       <Text style={styles.loginText}>
