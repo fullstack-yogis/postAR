@@ -134,6 +134,8 @@ class HelloWorldSceneAR extends Component {
       imageVisibility: false,
       pauseUpdates: false,
       dragPos: [0, 0, 0], // postition xyz
+      initialUserPos: [],
+      finalUserPos: [],
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
@@ -141,7 +143,12 @@ class HelloWorldSceneAR extends Component {
     this._onTap = this._onTap.bind(this);
     this._onDrag = this._onDrag.bind(this);
     this.pinAndSave = this.pinAndSave.bind(this);
+    this.initializeUserPosition = this.initializeUserPosition.bind(this)
     this.createPost = this.createPost.bind(this);
+    this.grabPosition = this.grabPosition.bind(this)
+    this.grabInitialPosition = this.grabInitialPosition.bind(this)
+    // this.distanceBetween = this.distanceBetween.bind(this);
+    // this.distance = this.distance.bind(this);
 
     this.renderNewPost = this.renderNewPost.bind(this);
     this.updateFeed = this.updateFeed.bind(this);
@@ -182,6 +189,13 @@ class HelloWorldSceneAR extends Component {
     this.setState({
       allPosts: [...prevPosts, newPost],
     });
+  }
+
+  initializeUserPosition(pos) {
+    console.log('pos', pos)
+    this.setState({
+      userPos: pos
+    })
   }
 
   //subscription method
@@ -238,21 +252,38 @@ class HelloWorldSceneAR extends Component {
   }
 
   _onDrag(d, source) {
+    console.log('d---------', d)
     this.setState({ dragPos: d });
   }
 
   //when the post is clicked, then it gets fixed and saved
   async pinAndSave() {
     // if (this.state.dragAble) {
+      // await this.grabPosition()
+      // console.log('type/?????', typeof this.state.initialUserPos[0])
+      // let x = this.state.initialUserPos[0] - this.state.finalUserPos[0]
+      // let y = this.state.initialUserPos[1] - this.state.finalUserPos[1]
+      // let z = this.state.initialUserPos[2] - this.state.finalUserPos[2]
+
+      // let userDistanceFromMarker = [x, y, z]
+      // console.log('user dist', userDistanceFromMarker)
+      // let drag = this.state.dragPos
+      // console.log('drag', drag)
+
     try {
       //post to DB function here
       console.log('this state', this.state);
+      let xDistance = this.state.dragPos[0]
+      let yDistance = this.state.dragPos[2]
+      let zDistance = this.state.dragPos[1]
+      console.log('distances', xDistance, yDistance, zDistance)
+
       let newPost = await this.createPost({
         description: this.props.sceneNavigator.viroAppProps.newPostText,
         privacy: this.props.sceneNavigator.viroAppProps.privacy,
-        xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1],
-        zDistance: this.state.dragPos[2],
+        xDistance,
+        yDistance,
+        zDistance,
         height: 0.1,
         width: 0.1,
         rotation: 0.1,
@@ -313,6 +344,45 @@ class HelloWorldSceneAR extends Component {
     }
   }
 
+  // distance(position1, position2) {
+  //   let sumSquares = 0;
+  //   for (let i = 0; i <= 2; i++) {
+  //     sumSquares += Math.abs((position1[i] - position2[i]) ** 2);
+  //   }
+  //   return Math.sqrt(sumSquares);
+  // }
+
+  // async distanceBetween(component) {
+  //   let xpos = component.xpos/10 + this.worldOriginRef[0];
+  //   let ypos = component.ypos/10 + this.worldOriginRef[1];
+  //   let zpos = component.zpos/10 + this.worldOriginRef[2];
+  //   let position2 = [xpos, ypos, zpos];
+  //   if (this.arSceneRef && position2) {
+  //     const position = await this.arSceneRef.getCameraOrientationAsync();
+  //     this.separation[component.itemId] = this.distance(
+  //       position.position,
+  //       position2
+  //     );
+  //   }
+  // }
+
+  async grabInitialPosition() {
+    const {position} = await this.mainScene.getCameraOrientationAsync();
+    console.log('-------initial position', position)
+    this.setState({initialUserPos: position})
+    // return position
+    // this.worldOriginRef = position
+  }
+
+    async grabPosition() {
+      const {position} = await this.mainScene.getCameraOrientationAsync();
+      console.log('-------position', position)
+      this.setState({finalUserPos: position})
+      // return position
+      // this.worldOriginRef = position
+    }
+
+
   render() {
     ViroARTrackingTargets.createTargets({
       target: {
@@ -321,24 +391,30 @@ class HelloWorldSceneAR extends Component {
         physicalWidth: 0.09,
       },
     });
+    console.log('state', this.state)
     return (
-      <ViroARScene anchorDetection={['PlanesVertical']}>
+      <ViroARScene ref={scene => {this.mainScene = scene}} anchorDetection={['PlanesVertical']}>
         <ViroARImageMarker //looking for target to render the new world.  once found, the previous posts are posted
           target="target"
           pauseUpdates={this.state.pauseUpdates}
+
           onAnchorFound={() => {
             this.setState({ pauseUpdates: true });
             this.props.sceneNavigator.viroAppProps.changeCrosshairState();
             this.props.sceneNavigator.viroAppProps.changeMenuState();
             this.props.sceneNavigator.viroAppProps.toggleNmsg('LOOK_FOR_POST');
+            // this.grabInitialPosition()
           }}
           // dragType="FixedToPlane"
         >
           {this.state.allPosts.map(post => {
             let posnArray = [
-              post.xDistance + 0.1,
-              post.yDistance - 0.15,
-              post.zDistance + 1.6,
+              post.xDistance,
+              post.yDistance,
+              post.zDistance
+              // post.xDistance + 0.1,
+              // post.yDistance - 0.15,
+              // post.zDistance + 1.6,
             ];
             return (
               <ViroFlexView key={post.id}>
