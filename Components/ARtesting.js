@@ -51,6 +51,7 @@ const POST_MUTATION = gql`
     $zDistance: Float!
     $height: Float!
     $width: Float!
+    $rotation: Float!
   ) {
     post(
       description: $description
@@ -60,6 +61,7 @@ const POST_MUTATION = gql`
       zDistance: $zDistance
       height: $height
       width: $width
+      rotation: $rotation
     ) {
       id
       createdAt
@@ -70,6 +72,7 @@ const POST_MUTATION = gql`
       description
       height
       width
+      rotation
     }
   }
 `;
@@ -89,11 +92,11 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       width
       postPostedBy {
         id
+      }
       comments {
         id
         text
         createdAt
-        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -247,10 +250,11 @@ class HelloWorldSceneAR extends Component {
         description: this.props.sceneNavigator.viroAppProps.newPostText,
         privacy: this.props.sceneNavigator.viroAppProps.privacy,
         xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1] + 0.3,
+        yDistance: this.state.dragPos[1],
         zDistance: this.state.dragPos[2],
         height: 0.1,
         width: 0.1,
+        rotation: 0.1,
       });
       console.log('newPost after pin and save', newPost);
       if (newPost.privacy === false) {
@@ -330,7 +334,11 @@ class HelloWorldSceneAR extends Component {
           // dragType="FixedToPlane"
         >
           {this.state.allPosts.map(post => {
-            let posnArray = [post.xDistance, post.yDistance, post.zDistance];
+            let posnArray = [
+              post.xDistance + 0.1,
+              post.yDistance - 0.15,
+              post.zDistance + 1.6,
+            ];
             return (
               <ViroFlexView key={post.id}>
                 <ViroText
@@ -348,9 +356,9 @@ class HelloWorldSceneAR extends Component {
                 />
                 {post.comments.map((comment, idx) => {
                   let commentPosnArray = [
-                    post.xDistance,
-                    0.2,
-                    post.zDistance + 0.1 * (idx + 1),
+                    post.xDistance + 0.1,
+                    post.yDistance - 0.15,
+                    post.zDistance + 0.1 * (idx + 1) + 1.7,
                   ];
 
                   return (
