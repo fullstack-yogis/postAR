@@ -26,23 +26,53 @@ export default class MovePost extends Component {
 
   render() {
     return (
-        <ScrollView>
+        <View>
           <Button
-            title="+X"
+            title="Right"
             onPress={() => {
-              console.log('press X')
+              this.props.moveX(0.25)
             }}
           />
           <Button
-            title="+Y"
+            title="Closer"
             onPress={() => {
-              console.log('press Y')
+              this.props.moveY(0.25)
             }}
           />
           <Button
-          title="+Z"
+          title="Down"
           onPress={() => {
-            console.log('press Y')
+            this.props.moveZ(0.25)
+          }}
+        />
+        <Button
+            title="Left"
+            onPress={() => {
+              this.props.moveX(-0.25)
+            }}
+          />
+          <Button
+            title="Further"
+            onPress={() => {
+              this.props.moveY(-0.25)
+            }}
+          />
+          <Button
+          title="Up"
+          onPress={() => {
+            this.props.moveZ(-0.25)
+          }}
+        />
+        <Button
+          title="Rotate"
+          onPress={() => {
+            this.props.rotate('left')
+          }}
+        />
+         <Button
+          title="Rotate Up"
+          onPress={() => {
+            this.props.rotate('up')
           }}
         />
           {/* <Button
@@ -56,7 +86,7 @@ export default class MovePost extends Component {
               this.props.toggleMovePost();
             }}
           /> */}
-        </ScrollView>
+        </View>
     );
   }
 }
