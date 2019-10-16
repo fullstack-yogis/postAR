@@ -11,7 +11,7 @@ import {
 import NewPost from './components/NewPost';
 import Login from './components/LogIn';
 import CreateComments from './components/CreateComments';
-import MovePost from './components/MovePost'
+import MovePost from './components/MovePost';
 
 import { ViroARSceneNavigator } from 'react-viro';
 
@@ -107,12 +107,12 @@ export default class postAR extends Component {
     this.updateNewPostTextAndPriv = this.updateNewPostTextAndPriv.bind(this);
     this.renderNotification = this.renderNotification.bind(this);
     this.toggleNmsg = this.toggleNmsg.bind(this);
-    this.toggleMovePost = this.toggleMovePost.bind(this)
+    this.toggleMovePost = this.toggleMovePost.bind(this);
     this.changeMenuState = this.changeMenuState.bind(this);
     this.renderMenu = this.renderMenu.bind(this);
     this.changeCrosshairState = this.changeCrosshairState.bind(this);
     this.renderCrosshair = this.renderCrosshair.bind(this);
-    this.renderNewPost = this.renderNewPost.bind(this)
+    this.renderNewPost = this.renderNewPost.bind(this);
     this.setUserTokenAndView = this.setUserTokenAndView.bind(this);
     this.changeCurrentView = this.changeCurrentView.bind(this);
     this.toggleCreatePost = this.toggleCreatePost.bind(this);
@@ -122,12 +122,12 @@ export default class postAR extends Component {
     this.turnOffCreateComments = this.turnOffCreateComments.bind(this);
     this.pinAndSave = this.pinAndSave.bind(this);
     this.createPost = this.createPost.bind(this);
-    this.renderMovePost = this.renderMovePost.bind(this)
+    this.renderMovePost = this.renderMovePost.bind(this);
     this.updateAppState = this.updateAppState.bind(this);
-    this.moveX = this.moveX.bind(this)
-    this.moveY = this.moveY.bind(this)
-    this.moveZ = this.moveZ.bind(this)
-    this.rotate = this.rotate.bind(this)
+    this.moveX = this.moveX.bind(this);
+    this.moveY = this.moveY.bind(this);
+    this.moveZ = this.moveZ.bind(this);
+    this.rotate = this.rotate.bind(this);
   }
   //send this function to AR so that it can be called to change state here
   updateAppState(newState) {
@@ -136,41 +136,32 @@ export default class postAR extends Component {
 
   moveX(distance) {
     this.setState({
-      xDistance: this.state.xDistance + distance
-    })
+      xDistance: this.state.xDistance + distance,
+    });
   }
 
   moveY(distance) {
     this.setState({
-      yDistance: this.state.yDistance + distance
-    })
+      yDistance: this.state.yDistance + distance,
+    });
   }
 
   moveZ(distance) {
     this.setState({
-      zDistance: this.state.zDistance + distance
-    })
+      zDistance: this.state.zDistance + distance,
+    });
   }
 
   rotate(dir) {
     if (dir === 'left') {
       this.setState({
-        rotation: [
-          this.state.rotation[0],
-          0,
-          this.state.rotation[2] + 45,
-        ]
-      })
+        rotation: [this.state.rotation[0], 0, this.state.rotation[2] + 45],
+      });
     } else {
       this.setState({
-        rotation: [
-          this.state.rotation[0] + 90,
-          0,
-          this.state.rotation[2],
-        ]
-      })
+        rotation: [this.state.rotation[0] + 90, 0, this.state.rotation[2]],
+      });
     }
-
   }
 
   renderNewPost() {
@@ -187,7 +178,11 @@ export default class postAR extends Component {
           rotation={this.state.rotation}
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-          position={[this.state.xDistance, this.state.yDistance, this.state.zDistance]}
+          position={[
+            this.state.xDistance,
+            this.state.yDistance,
+            this.state.zDistance,
+          ]}
           // onDrag={this._onDrag}
           // onClick={this.updateAppState({
           //           rotation: [
@@ -286,9 +281,8 @@ export default class postAR extends Component {
       newPostText: '',
       xDistance: 0,
       yDistance: 0,
-      zDistance: 0
-
-  });
+      zDistance: 0,
+    });
   }
 
   // toggle create NewPost page
@@ -310,11 +304,11 @@ export default class postAR extends Component {
               this.toggleCreatePost();
               this.toggleNmsg('');
             }}
-            style={{ color: 'white' }}
+            color="white"
           />
           <Button
             title="HOME"
-            style={{ color: 'white' }}
+            color="white"
             onPress={() => {
               this.turnOffCreatePost();
               this.turnOffCreateComments();
@@ -323,7 +317,7 @@ export default class postAR extends Component {
           />
           <Button
             title="LOGOUT"
-            style={{ color: 'white' }}
+            color="white"
             onPress={() => {
               this.logout();
             }}
@@ -432,9 +426,9 @@ export default class postAR extends Component {
     }
   }
 
-   // to toggle page to move when 'POST' is submitted
-   toggleMovePost() {
-     console.log('movePost', this.state.movePost)
+  // to toggle page to move when 'POST' is submitted
+  toggleMovePost() {
+    console.log('movePost', this.state.movePost);
     this.setState({ movePost: !this.state.movePost });
   }
 
@@ -448,7 +442,7 @@ export default class postAR extends Component {
           moveZ={this.moveZ}
           rotate={this.rotate}
         />
-      )
+      );
     }
   }
 
@@ -458,7 +452,7 @@ export default class postAR extends Component {
       this.setState({ createPost: !this.state.createPost });
     } else if (this.state.postOrPin === 'PIN') {
       console.log('call the database');
-      this.toggleMovePost()
+      this.toggleMovePost();
       this.pinAndSave();
       //then change the state to POST
       this.setState({ postOrPin: 'POST' });
@@ -544,11 +538,10 @@ export default class postAR extends Component {
   }
 }
 
-
 const styles = StyleSheet.create({
   viroFont: {
     // color: '#FFFFFF',
-    width: 2
+    width: 2,
   },
   crosshair: {
     alignSelf: 'center',
