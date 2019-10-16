@@ -27,7 +27,8 @@ const FEED_QUERY = gql`
       xDistance
       yDistance
       zDistance
-      rotation
+      horRotation
+      verRotation
       comments {
         id
         text
@@ -56,7 +57,8 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
-      rotation
+      horRotation
+      verRotation
       postPostedBy {
         id
       }
@@ -64,7 +66,6 @@ const NEW_POSTS_SUBSCRIPTION = gql`
         id
         text
         createdAt
-        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -107,7 +108,6 @@ class HelloWorldSceneAR extends Component {
     };
     this._onTap = this._onTap.bind(this);
     this._onDrag = this._onDrag.bind(this);
-    this.renderNewPost = this.renderNewPost.bind(this);
     this.updateFeed = this.updateFeed.bind(this);
     this._subscribeToNewPosts = this._subscribeToNewPosts.bind(this);
     this.updateCommentFeed = this.updateCommentFeed.bind(this);
@@ -213,43 +213,6 @@ class HelloWorldSceneAR extends Component {
     this.props.sceneNavigator.viroAppProps.updateAppState({ dragPos: d });
   }
 
-  renderNewPost() {
-    if (this.props.sceneNavigator.viroAppProps.newPostText.length !== 0) {
-      // this.setState({ dragAble: true });
-      // console.log(this.props.sceneNavigator.viroAppProps.newPostText);
-      // this.props.sceneNavigator.viroAppProps.toggleNmsg('DRAG_POST'); //infinite loop
-      return (
-        <ViroText
-          text={this.props.sceneNavigator.viroAppProps.newPostText}
-          height={0.5}
-          width={0.5}
-          rotation={this.props.sceneNavigator.viroAppProps.rotation}
-          extrusionDepth={8}
-          materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-          position={[0, 0, 0]}
-          onDrag={this._onDrag}
-          // onClick={this.pinAndSave}
-          onClickState={stateValue => {
-            if (stateValue === 1) {
-              this.setState({ clickTime: Date.now() });
-            } else if (stateValue === 2) {
-              if (Date.now() - this.state.clickTime < 200) {
-                this.props.sceneNavigator.viroAppProps.updateAppState({
-                  rotation: [
-                    -90,
-                    0,
-                    this.props.sceneNavigator.viroAppProps.rotation[2] + 45,
-                  ],
-                });
-              }
-            }
-          }}
-          // dragType="FixedDistanceOrigin"
-          // onDrag={this.state.dragAble ? this._onDrag : null}
-        />
-      );
-    }
-  }
 
   render() {
     ViroARTrackingTargets.createTargets({
@@ -274,11 +237,11 @@ class HelloWorldSceneAR extends Component {
         >
           {this.state.allPosts.map(post => {
             let posnArray = [
-              post.xDistance + 0.1,
-              post.yDistance - 0.15,
-              post.zDistance + 1.6,
+              post.xDistance,
+              post.yDistance,
+              post.zDistance,
             ];
-            let rotation = [-90, 0, post.rotation];
+            let rotation = [post.verRotation, 0, post.horRotation];
             return (
               <ViroFlexView key={post.id}>
                 <ViroText
@@ -298,9 +261,9 @@ class HelloWorldSceneAR extends Component {
                 />
                 {post.comments.map((comment, idx) => {
                   let commentPosnArray = [
-                    post.xDistance + 0.1,
-                    post.yDistance - 0.15,
-                    post.zDistance + 0.1 * (idx + 1) + 1.7,
+                    post.xDistance,
+                    post.yDistance,
+                    post.zDistance + 0.1 * (idx + 1) + 0.1,
                   ];
 
                   return (
@@ -322,7 +285,7 @@ class HelloWorldSceneAR extends Component {
               </ViroFlexView>
             );
           })}
-          {this.renderNewPost()}
+          {this.props.sceneNavigator.viroAppProps.renderNewPost()}
         </ViroARImageMarker>
       </ViroARScene>
     );
@@ -354,16 +317,16 @@ var styles = StyleSheet.create({
 
 ViroMaterials.createMaterials({
   frontMaterial: {
-    diffuseColor: '#E6E1C5',
+    diffuseColor: 'white',
     blendMode: 'Alpha',
   },
   backMaterial: {
-    diffuseColor: '#E6E1C5',
+    diffuseColor: 'red',
     blendMode: 'Add',
   },
   //
   sideMaterial: {
-    diffuseColor: '#F0CF65',
+    diffuseColor: 'red',
     blendMode: 'Add',
   },
 });

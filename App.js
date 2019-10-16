@@ -11,6 +11,7 @@ import {
 import NewPost from './components/NewPost';
 import Login from './components/LogIn';
 import CreateComments from './components/CreateComments';
+import MovePost from './components/MovePost'
 
 import { ViroARSceneNavigator } from 'react-viro';
 
@@ -18,6 +19,16 @@ import { APP_SECRET } from './front_secrets';
 import { getMarkupFromTree } from 'react-apollo';
 import { client } from './index.ios';
 import gql from 'graphql-tag';
+
+import {
+  ViroARScene,
+  ViroText,
+  ViroImage,
+  ViroARTrackingTargets,
+  ViroARImageMarker,
+  ViroMaterials,
+  ViroFlexView,
+} from 'react-viro';
 
 let sharedProps = {
   apiKey: APP_SECRET,
@@ -37,7 +48,8 @@ const POST_MUTATION = gql`
     $zDistance: Float!
     $height: Float!
     $width: Float!
-    $rotation: Float!
+    $horRotation: Float!
+    $verRotation: Float!
   ) {
     post(
       description: $description
@@ -47,7 +59,8 @@ const POST_MUTATION = gql`
       zDistance: $zDistance
       height: $height
       width: $width
-      rotation: $rotation
+      horRotation: $horRotation
+      verRotation: $verRotation
     ) {
       id
       createdAt
@@ -58,7 +71,8 @@ const POST_MUTATION = gql`
       description
       height
       width
-      rotation
+      horRotation
+      verRotation
     }
   }
 `;
@@ -76,8 +90,12 @@ export default class postAR extends Component {
       newPostText: '',
       newPostInd: false,
       postPrivacy: false,
+      movePost: false,
       accessAR: true,
       createPost: false,
+      xDistance: 0,
+      yDistance: 0,
+      zDistance: 0,
       createComments: false,
       commentsForPostId: '',
       postOrPin: 'POST',
@@ -89,10 +107,12 @@ export default class postAR extends Component {
     this.updateNewPostTextAndPriv = this.updateNewPostTextAndPriv.bind(this);
     this.renderNotification = this.renderNotification.bind(this);
     this.toggleNmsg = this.toggleNmsg.bind(this);
+    this.toggleMovePost = this.toggleMovePost.bind(this)
     this.changeMenuState = this.changeMenuState.bind(this);
     this.renderMenu = this.renderMenu.bind(this);
     this.changeCrosshairState = this.changeCrosshairState.bind(this);
     this.renderCrosshair = this.renderCrosshair.bind(this);
+    this.renderNewPost = this.renderNewPost.bind(this)
     this.setUserTokenAndView = this.setUserTokenAndView.bind(this);
     this.changeCurrentView = this.changeCurrentView.bind(this);
     this.toggleCreatePost = this.toggleCreatePost.bind(this);
@@ -102,11 +122,100 @@ export default class postAR extends Component {
     this.turnOffCreateComments = this.turnOffCreateComments.bind(this);
     this.pinAndSave = this.pinAndSave.bind(this);
     this.createPost = this.createPost.bind(this);
+    this.renderMovePost = this.renderMovePost.bind(this)
     this.updateAppState = this.updateAppState.bind(this);
+    this.moveX = this.moveX.bind(this)
+    this.moveY = this.moveY.bind(this)
+    this.moveZ = this.moveZ.bind(this)
+    this.rotate = this.rotate.bind(this)
   }
   //send this function to AR so that it can be called to change state here
   updateAppState(newState) {
     this.setState(newState);
+  }
+
+  moveX(distance) {
+    this.setState({
+      xDistance: this.state.xDistance + distance
+    })
+  }
+
+  moveY(distance) {
+    this.setState({
+      yDistance: this.state.yDistance + distance
+    })
+  }
+
+  moveZ(distance) {
+    this.setState({
+      zDistance: this.state.zDistance + distance
+    })
+  }
+
+  rotate(dir) {
+    if (dir === 'left') {
+      this.setState({
+        rotation: [
+          this.state.rotation[0],
+          0,
+          this.state.rotation[2] + 45,
+        ]
+      })
+    } else {
+      this.setState({
+        rotation: [
+          this.state.rotation[0] + 90,
+          0,
+          this.state.rotation[2],
+        ]
+      })
+    }
+
+  }
+
+  renderNewPost() {
+    if (this.state.newPostText.length !== 0) {
+      // this.setState({ dragAble: true });
+      // console.log(this.props.sceneNavigator.viroAppProps.newPostText);
+      // this.props.sceneNavigator.viroAppProps.toggleNmsg('DRAG_POST'); //infinite loop
+      return (
+        <ViroText
+          text={this.state.newPostText}
+          height={0.5}
+          width={0.5}
+          rotation={this.state.rotation}
+          extrusionDepth={8}
+          materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
+          position={[this.state.xDistance, this.state.yDistance, this.state.zDistance]}
+          // onDrag={this._onDrag}
+          // onClick={this.updateAppState({
+          //           rotation: [
+          //             -90,
+          //             0,
+          //             this.state.rotation[2] + 45,
+          //           ],
+          //         })}
+
+          // onClickState={stateValue => {
+          //   if (stateValue === 1) {
+          //     this.setState({ clickTime: Date.now() });
+          //   } else if (stateValue === 2) {
+          //     if (Date.now() - this.state.clickTime < 200) {
+          //       this.state.updateAppState({
+          //         rotation: [
+          //           -90,
+          //           0,
+          //           this.state.rotation[2] + 45,
+          //         ],
+          //       });
+          //     }
+          //   }
+          // }}
+          // dragType="FixedDistanceOrigin"
+          // onDrag={this.state.dragAble ? this._onDrag : null}
+        />
+      );
+    }
   }
 
   //when the post is clicked, then it gets fixed and saved
@@ -117,12 +226,13 @@ export default class postAR extends Component {
       let newPost = await this.createPost({
         description: this.state.newPostText,
         privacy: this.state.privacy,
-        xDistance: this.state.dragPos[0],
-        yDistance: this.state.dragPos[1],
-        zDistance: this.state.dragPos[2],
+        xDistance: this.state.xDistance,
+        yDistance: this.state.yDistance,
+        zDistance: this.state.zDistance + 0.3,
         height: 0.1,
         width: 0.1,
-        rotation: this.state.rotation[2],
+        verRotation: this.state.rotation[0],
+        horRotation: this.state.rotation[2],
       });
       this.setState({ rotation: [-90, 0, 0] });
       if (newPost.privacy === false) {
@@ -171,7 +281,13 @@ export default class postAR extends Component {
 
   // reset new post text to ''
   resetNewPostText() {
-    this.setState({ newPostText: '' });
+    this.setState({
+      newPostText: '',
+      xDistance: 0,
+      yDistance: 0,
+      zDistance: 0
+
+  });
   }
 
   // toggle create NewPost page
@@ -285,6 +401,7 @@ export default class postAR extends Component {
           initialScene={{ scene: InitialARScene }}
           viroAppProps={{
             changeMenuState: this.changeMenuState,
+            renderNewPost: this.renderNewPost,
             toggleNmsg: this.toggleNmsg,
             changeCrosshairState: this.changeCrosshairState,
             newPostText: this.state.newPostText,
@@ -308,8 +425,29 @@ export default class postAR extends Component {
           updateNewPostTextAndPriv={this.updateNewPostTextAndPriv}
           changeMenuState={this.changeMenuState}
           toggleCreatePost={this.toggleCreatePost}
+          toggleMovePost={this.toggleMovePost}
         />
       );
+    }
+  }
+
+   // to toggle page to move when 'POST' is submitted
+   toggleMovePost() {
+     console.log('movePost', this.state.movePost)
+    this.setState({ movePost: !this.state.movePost });
+  }
+
+  // renders create new post page
+  renderMovePost() {
+    if (this.state.movePost) {
+      return (
+        <MovePost
+          moveX={this.moveX}
+          moveY={this.moveY}
+          moveZ={this.moveZ}
+          rotate={this.rotate}
+        />
+      )
     }
   }
 
@@ -319,6 +457,7 @@ export default class postAR extends Component {
       this.setState({ createPost: !this.state.createPost });
     } else if (this.state.postOrPin === 'PIN') {
       console.log('call the database');
+      this.toggleMovePost()
       this.pinAndSave();
       //then change the state to POST
       this.setState({ postOrPin: 'POST' });
@@ -396,6 +535,7 @@ export default class postAR extends Component {
           {this.renderCreatePost()}
           {this.renderCreateComments()}
           {this.renderCrosshair()}
+          {this.renderMovePost()}
           {this.renderMenu()}
         </View>
       );
