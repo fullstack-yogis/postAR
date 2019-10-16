@@ -86,7 +86,6 @@ class HelloWorldSceneAR extends Component {
         query: FEED_QUERY,
         fetchPolicy: 'network-only',
       });
-      console.log('data in componentdidmount:', data);
       //set to local state
       this.setState({
         allPosts: data.feed,
@@ -122,7 +121,6 @@ class HelloWorldSceneAR extends Component {
           height: 0.1,
           width: 0.1,
         });
-        console.log('new1 is ', newPost);
       } catch (e) {
         console.log('pinAndSave error ' + e);
       }
@@ -136,7 +134,6 @@ class HelloWorldSceneAR extends Component {
         mutation: POST_MUTATION,
         variables: post,
       });
-      console.log('data is ', data);
       this.setState({
         allPosts: [...this.state.allPosts, data.post],
       });
@@ -196,7 +193,6 @@ class HelloWorldSceneAR extends Component {
           />
           {this.state.allPosts.map(post => {
             let posnArray = [post.xDistance, 0.2, post.zDistance];
-            // console.log('post is ', post.description);
             return (
               <ViroText
                 text={post.description}
