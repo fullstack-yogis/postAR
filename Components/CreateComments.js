@@ -132,7 +132,7 @@ export default class CreateComments extends Component {
   render() {
     return (
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'height' : null}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
       >
         <TouchableWithoutFeedback
@@ -146,21 +146,21 @@ export default class CreateComments extends Component {
               backgroundColor: 'black',
             }}
           >
-            <ScrollView>
-              <View style={{ flex: 3 }}>
-                <View style={styles.post}>
-                  <Text style={styles.postText}>
-                    {this.state.postDescription}
-                  </Text>
-                </View>
+            <View style={{ flex: 3 }}>
+              <View style={styles.post}>
+                <Text style={styles.postText}>
+                  {this.state.postDescription}
+                </Text>
+              </View>
+              <ScrollView>
                 {this.state.comments.map(comment => (
                   <View style={styles.comment} key={comment.id}>
                     <Text style={styles.commentName}>{comment.user.name}</Text>
                     <Text style={styles.commentText}>{comment.text} </Text>
                   </View>
                 ))}
-              </View>
-            </ScrollView>
+              </ScrollView>
+            </View>
             <View style={styles.inputView}>
               <TextInput
                 onChangeText={text => this.setState({ text })}

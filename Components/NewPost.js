@@ -8,9 +8,10 @@ import {
   Text,
   Switch,
   KeyboardAvoidingView,
-  SafeAreaView,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
 
 export default class NewPost extends Component {
@@ -30,8 +31,8 @@ export default class NewPost extends Component {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 0.5 }}
       >
-        <ScrollView>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1, backgroundColor: 'black' }}>
             <View
               style={{
                 flex: 0.5,
@@ -45,61 +46,90 @@ export default class NewPost extends Component {
                   fontWeight: 'bold',
                   alignSelf: 'center',
                   padding: 5,
+                  color: 'white',
                 }}
               >
                 NEW POST
               </Text>
               <TextInput
-                style={{ borderWidth: 1, padding: 10 }}
-                placeholder="Type new post here!"
                 onChangeText={text => this.setState({ text })}
+                placeholder="Type new post here!"
                 value={this.state.text}
+                style={styles.input}
               />
-
               <View
                 style={{
                   flexDirection: 'row',
-                  // paddingTop: 15,
                   justifyContent: 'space-evenly',
+                  paddingTop: 2,
                 }}
               >
-                <View
+                <Text
                   style={{
-                    flexDirection: 'row',
+                    fontSize: 20,
                     paddingTop: 2,
+                    paddingRight: 3,
+                    color: 'white',
                   }}
                 >
-                  <Text
-                    style={{ fontSize: 20, paddingTop: 2, paddingRight: 3 }}
-                  >
-                    Private
-                  </Text>
-                  <Switch
-                    style={{
-                      transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
-
-                    }}
-                    onValueChange={this.togglePrivacy}
-                    value={this.state.private}
-                    trackColor={{ false: 'grey', true: 'red' }}
-                  />
-                </View>
-                <Button
-                  title="SUBMIT"
-                  onPress={() => {
-                    this.props.updateNewPostTextAndPriv(
-                      this.state.text,
-                      this.state.private
-                    );
-                    this.props.toggleMovePost();
-                    this.props.toggleCreatePost();
+                  Private
+                </Text>
+                <Switch
+                  style={{
+                    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
                   }}
+                  onValueChange={this.togglePrivacy}
+                  value={this.state.private}
+                  trackColor={{ false: 'grey', true: 'red' }}
                 />
               </View>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  this.props.updateNewPostTextAndPriv(
+                    this.state.text,
+                    this.state.private
+                  );
+                  this.props.toggleCreatePost();
+                }}
+              >
+                <Text style={styles.buttonText}>ADD NEW POST</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableWithoutFeedback>
-        </ScrollView>
+          </View>
+        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  input: {
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    width: 275,
+    backgroundColor: 'white',
+    fontSize: 20,
+    height: 40,
+    paddingLeft: 8,
+    margin: 4,
+  },
+  button: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    width: 275,
+    height: 35,
+    backgroundColor: '#4169E1',
+    borderRadius: 10,
+    borderWidth: 1,
+    marginTop: 30,
+  },
+  buttonText: {
+    alignSelf: 'center',
+    color: 'white',
+    fontSize: 18,
+    padding: 2,
+    margin: 2,
+  },
+});
