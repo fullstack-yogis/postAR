@@ -123,7 +123,10 @@ class HelloWorldSceneAR extends Component {
       });
       //set to local state
       let posts = data.feed.map(post => {
-        if (post.comments.length > 3) post.comments.splice(3);
+        if (post.comments.length > 3) {
+          let lastComments = post.comments.splice(post.comments.length - 3);
+          post.comments = lastComments;
+        }
         return post;
       });
       this.setState({
@@ -170,10 +173,15 @@ class HelloWorldSceneAR extends Component {
     let newPosts = this.state.allPosts.map(post => {
       if (post.id === newComment.post.id) {
         let newPost = post;
-        newPost.comments = newPost.comments
-          .filter((comment, idx) => idx !== 0)
-          .concat([newComment]);
-        return newPost;
+        if (newPost.comments.length < 3) {
+          newPost.comments = newPost.comments.concat([newComment]);
+          return newPost;
+        } else {
+          newPost.comments = newPost.comments
+            .filter((comment, idx) => idx !== 0)
+            .concat([newComment]);
+          return newPost;
+        }
       } else {
         return post;
       }
