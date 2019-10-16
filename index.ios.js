@@ -37,14 +37,14 @@ const authLink = setContext(async (_, { headers }) => {
 
 // in order to test locally and debug with Viro, use uri with your IP address then :4000
 const httpLink = createHttpLink({
-  // uri: URI,
-  uri: 'http://172.16.23.242:4000',
+  uri: URI,
+  // uri: 'http://172.16.23.242:4000',
   // uri: 'http://192.168.1.17:4000',
 });
 
 const wsLink = new WebSocketLink({
-  // uri: URI,
-  uri: `ws://172.16.23.242:4000`,
+  uri: URI,
+  // uri: `ws://172.16.23.242:4000`,
   // uri: 'http://192.168.1.17:4000',
   options: {
     reconnect: true,

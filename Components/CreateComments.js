@@ -1,15 +1,16 @@
+/* eslint-disable no-use-before-define */
 import React, { Component } from 'react';
 import {
   TextInput,
   View,
   StyleSheet,
   Text,
-  Button,
   KeyboardAvoidingView,
-  SafeAreaView,
+  ScrollView,
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import { client } from '../index.ios';
 import gql from 'graphql-tag';
@@ -134,26 +135,48 @@ export default class CreateComments extends Component {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={{ flex: 1 }}>
-            <Text>POST: {this.state.postDescription}</Text>
-            {this.state.comments.map(comment => (
-              <Text key={comment.id}>
-                {comment.text} (by {comment.user.name})
-              </Text>
-            ))}
-            <TextInput
-              onChangeText={text => this.setState({ text })}
-              placeholder="Add your comments here..."
-              value={this.state.text}
-              style={styles.input}
-            />
-            <Button
-              title="Add Comments"
-              onPress={() => {
-                this.addComment(this.props.commentsForPostId);
-              }}
-            />
+        <TouchableWithoutFeedback
+          onPress={Keyboard.dismiss}
+          style={{ flex: 1 }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              backgroundColor: 'black',
+            }}
+          >
+            <View style={{ flex: 3 }}>
+              <View style={styles.post}>
+                <Text style={styles.postText}>
+                  {this.state.postDescription}
+                </Text>
+              </View>
+              <ScrollView>
+                {this.state.comments.map(comment => (
+                  <View style={styles.comment} key={comment.id}>
+                    <Text style={styles.commentName}>{comment.user.name}</Text>
+                    <Text style={styles.commentText}>{comment.text} </Text>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+            <View style={styles.inputView}>
+              <TextInput
+                onChangeText={text => this.setState({ text })}
+                placeholder="Add your comments here..."
+                value={this.state.text}
+                style={styles.input}
+              />
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  this.addComment(this.props.commentsForPostId);
+                }}
+              >
+                <Text style={styles.buttonText}>ADD COMMENT</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -163,17 +186,66 @@ export default class CreateComments extends Component {
 
 const styles = StyleSheet.create({
   input: {
-    height: 30,
-    marginLeft: 10,
-    fontSize: 15,
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    width: 275,
+    backgroundColor: 'white',
+    fontSize: 18,
+    height: 38,
+    paddingLeft: 8,
+    margin: 4,
   },
-
-  close: {
-    width: 40,
-    height: 40,
-    alignSelf: 'flex-end',
-    marginRight: 10,
-    marginBottom: 10,
+  inputView: {
+    flex: 1,
+  },
+  post: {
+    alignSelf: 'center',
+    borderWidth: 1,
+    width: 275,
+    borderRadius: 10,
+    margin: 3,
     marginTop: 10,
+    backgroundColor: '#008080',
+  },
+  postText: {
+    alignSelf: 'center',
+    fontSize: 25,
+    padding: 2,
+    color: 'white',
+  },
+  comment: {
+    alignSelf: 'center',
+    padding: 2,
+    margin: 2,
+    borderWidth: 1,
+    borderRadius: 10,
+    width: 275,
+    backgroundColor: 'grey',
+  },
+  commentName: {
+    color: 'blue',
+    fontSize: 12,
+    fontWeight: '600',
+    paddingLeft: 5,
+  },
+  commentText: {
+    paddingLeft: 5,
+  },
+  button: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    width: 275,
+    height: 35,
+    backgroundColor: '#4169E1',
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  buttonText: {
+    alignSelf: 'center',
+    color: 'white',
+    fontSize: 18,
+    padding: 2,
+    margin: 2,
   },
 });
