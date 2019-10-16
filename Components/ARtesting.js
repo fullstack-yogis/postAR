@@ -11,6 +11,7 @@ import {
   ViroARImageMarker,
   ViroMaterials,
   ViroFlexView,
+  ViroNode,
 } from 'react-viro';
 
 // import { withApollo } from 'react-apollo';
@@ -213,7 +214,6 @@ class HelloWorldSceneAR extends Component {
     this.props.sceneNavigator.viroAppProps.updateAppState({ dragPos: d });
   }
 
-
   render() {
     ViroARTrackingTargets.createTargets({
       target: {
@@ -236,14 +236,10 @@ class HelloWorldSceneAR extends Component {
           // dragType="FixedToPlane"
         >
           {this.state.allPosts.map(post => {
-            let posnArray = [
-              post.xDistance,
-              post.yDistance,
-              post.zDistance,
-            ];
+            let posnArray = [post.xDistance, post.yDistance, post.zDistance];
             let rotation = [post.verRotation, 0, post.horRotation];
             return (
-              <ViroFlexView key={post.id}>
+              <ViroNode key={post.id}>
                 <ViroText
                   text={post.description || ''}
                   style={styles.viroFont}
@@ -282,7 +278,7 @@ class HelloWorldSceneAR extends Component {
                     />
                   );
                 })}
-              </ViroFlexView>
+              </ViroNode>
             );
           })}
           {this.props.sceneNavigator.viroAppProps.renderNewPost()}
@@ -297,11 +293,11 @@ class HelloWorldSceneAR extends Component {
 var styles = StyleSheet.create({
   viroFont: {
     // color: '#FFFFFF',
-    width: 2
+    width: 2,
   },
   comment: {
     fontSize: 10,
-    width: 2
+    width: 2,
   },
 });
 
