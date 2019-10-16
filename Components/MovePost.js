@@ -1,17 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Keyboard,
-  Platform,
-  TextInput,
-  View,
-  Text,
-  Switch,
-  KeyboardAvoidingView,
-  SafeAreaView,
-  TouchableWithoutFeedback,
-  ScrollView,
-} from 'react-native';
+import { Button, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 
 export default class MovePost extends Component {
   constructor() {
@@ -26,56 +14,86 @@ export default class MovePost extends Component {
 
   render() {
     return (
-        <View>
-          <Button
-            title="Right"
+      <View style={styles.container}>
+        <View style={styles.left}>
+          <TouchableOpacity
+            style={styles.upButton}
             onPress={() => {
-              this.props.moveX(0.25)
+              this.props.moveZ(-0.25);
             }}
-          />
-          <Button
-            title="Closer"
+          >
+            <Text style={styles.buttonText}>Up</Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: 'row',
+            }}
+          >
+            <TouchableOpacity
+              style={styles.leftButton}
+              onPress={() => {
+                this.props.moveX(-0.25);
+              }}
+            >
+              <Text style={styles.buttonText}>Left</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.rightButton}
+              onPress={() => {
+                this.props.moveX(0.25);
+              }}
+            >
+              <Text style={styles.buttonText}>Right</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={styles.downButton}
             onPress={() => {
-              this.props.moveY(0.25)
+              this.props.moveZ(0.25);
             }}
-          />
-          <Button
-          title="Down"
-          onPress={() => {
-            this.props.moveZ(0.25)
-          }}
-        />
-        <Button
-            title="Left"
-            onPress={() => {
-              this.props.moveX(-0.25)
-            }}
-          />
-          <Button
-            title="Further"
-            onPress={() => {
-              this.props.moveY(-0.25)
-            }}
-          />
-          <Button
-          title="Up"
-          onPress={() => {
-            this.props.moveZ(-0.25)
-          }}
-        />
-        <Button
-          title="Rotate"
-          onPress={() => {
-            this.props.rotate('left')
-          }}
-        />
-         <Button
-          title="Rotate Up"
-          onPress={() => {
-            this.props.rotate('up')
-          }}
-        />
-          {/* <Button
+          >
+            <Text style={styles.buttonText}>Down</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.right}>
+          <View>
+            <TouchableOpacity
+              style={styles.futherButton}
+              onPress={() => {
+                this.props.moveY(-0.25);
+              }}
+            >
+              <Text style={styles.buttonText}>Further</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.closerButton}
+              onPress={() => {
+                this.props.moveY(0.25);
+              }}
+            >
+              <Text style={styles.buttonText}>Closer</Text>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <TouchableOpacity
+              style={styles.rotateButton}
+              onPress={() => {
+                this.props.rotate('left');
+              }}
+            >
+              <Text style={styles.buttonText}>Rotate</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.rotateButton}
+              onPress={() => {
+                this.props.rotate('up');
+              }}
+            >
+              <Text style={styles.buttonText}>Rotate Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* <Button
             title="SUBMIT"
             onPress={() => {
               this.props.updateNewPostTextAndPriv(
@@ -86,7 +104,97 @@ export default class MovePost extends Component {
               this.props.toggleMovePost();
             }}
           /> */}
-        </View>
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'black',
+  },
+  left: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  right: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+  },
+  upButton: {
+    borderWidth: 1,
+    justifyContent: 'center',
+    margin: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  leftButton: {
+    borderWidth: 1,
+    justifyContent: 'center',
+    margin: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 25,
+    borderBottomLeftRadius: 25,
+  },
+  rightButton: {
+    borderWidth: 1,
+    justifyContent: 'center',
+    margin: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderTopRightRadius: 25,
+    borderBottomRightRadius: 25,
+  },
+  downButton: {
+    borderWidth: 1,
+    justifyContent: 'center',
+    margin: 10,
+    height: 50,
+    width: 50,
+    backgroundColor: 'white',
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+  },
+  buttonText: {
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  futherButton: {
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    width: 60,
+    height: 60,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  closerButton: {
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    width: 60,
+    height: 60,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  rotateButton: {
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    height: 70,
+    width: 70,
+    borderRadius: 60,
+  },
+});
