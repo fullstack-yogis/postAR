@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     top: '40%',
-    width: 150,
+    width: 225,
     height: 150,
     borderWidth: 5,
   },
