@@ -91,6 +91,7 @@ export default class NewPost extends Component {
                       this.state.text,
                       this.state.private
                     );
+                    this.props.toggleMovePost();
                     this.props.toggleCreatePost();
                   }}
                 />

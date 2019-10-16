@@ -11,6 +11,7 @@ import {
 import NewPost from './components/NewPost';
 import Login from './components/LogIn';
 import CreateComments from './components/CreateComments';
+import MovePost from './components/MovePost'
 
 import { ViroARSceneNavigator } from 'react-viro';
 
@@ -76,6 +77,7 @@ export default class postAR extends Component {
       newPostText: '',
       newPostInd: false,
       postPrivacy: false,
+      movePost: false,
       accessAR: true,
       createPost: false,
       createComments: false,
@@ -89,6 +91,7 @@ export default class postAR extends Component {
     this.updateNewPostTextAndPriv = this.updateNewPostTextAndPriv.bind(this);
     this.renderNotification = this.renderNotification.bind(this);
     this.toggleNmsg = this.toggleNmsg.bind(this);
+    this.toggleMovePost = this.toggleMovePost.bind(this)
     this.changeMenuState = this.changeMenuState.bind(this);
     this.renderMenu = this.renderMenu.bind(this);
     this.changeCrosshairState = this.changeCrosshairState.bind(this);
@@ -102,6 +105,7 @@ export default class postAR extends Component {
     this.turnOffCreateComments = this.turnOffCreateComments.bind(this);
     this.pinAndSave = this.pinAndSave.bind(this);
     this.createPost = this.createPost.bind(this);
+    this.renderMovePost = this.renderMovePost.bind(this)
     this.updateAppState = this.updateAppState.bind(this);
   }
   //send this function to AR so that it can be called to change state here
@@ -308,8 +312,24 @@ export default class postAR extends Component {
           updateNewPostTextAndPriv={this.updateNewPostTextAndPriv}
           changeMenuState={this.changeMenuState}
           toggleCreatePost={this.toggleCreatePost}
+          toggleMovePost={this.toggleMovePost}
         />
       );
+    }
+  }
+
+   // to toggle page to move when 'POST' is submitted
+   toggleMovePost() {
+     console.log('movePost', this.state.movePost)
+    this.setState({ movePost: !this.state.movePost });
+  }
+
+  // renders create new post page
+  renderMovePost() {
+    if (this.state.movePost) {
+      return (
+        <MovePost />
+      )
     }
   }
 
@@ -319,6 +339,7 @@ export default class postAR extends Component {
       this.setState({ createPost: !this.state.createPost });
     } else if (this.state.postOrPin === 'PIN') {
       console.log('call the database');
+      this.toggleMovePost()
       this.pinAndSave();
       //then change the state to POST
       this.setState({ postOrPin: 'POST' });
@@ -396,6 +417,7 @@ export default class postAR extends Component {
           {this.renderCreatePost()}
           {this.renderCreateComments()}
           {this.renderCrosshair()}
+          {this.renderMovePost()}
           {this.renderMenu()}
         </View>
       );

@@ -354,16 +354,16 @@ var styles = StyleSheet.create({
 
 ViroMaterials.createMaterials({
   frontMaterial: {
-    diffuseColor: '#E6E1C5',
+    diffuseColor: 'white',
     blendMode: 'Alpha',
   },
   backMaterial: {
-    diffuseColor: '#E6E1C5',
+    diffuseColor: 'red',
     blendMode: 'Add',
   },
   //
   sideMaterial: {
-    diffuseColor: '#F0CF65',
+    diffuseColor: 'red',
     blendMode: 'Add',
   },
 });
