@@ -183,6 +183,7 @@ export default class postAR extends Component {
           text={this.state.newPostText}
           height={0.5}
           width={0.5}
+          style={styles.viroFont}
           rotation={this.state.rotation}
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
@@ -543,7 +544,12 @@ export default class postAR extends Component {
   }
 }
 
+
 const styles = StyleSheet.create({
+  viroFont: {
+    // color: '#FFFFFF',
+    width: 2
+  },
   crosshair: {
     alignSelf: 'center',
     position: 'absolute',
