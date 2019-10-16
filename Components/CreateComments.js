@@ -165,6 +165,7 @@ export default class CreateComments extends Component {
               <TextInput
                 onChangeText={text => this.setState({ text })}
                 placeholder="Add your comments here..."
+                placeholderTextColor="grey"
                 value={this.state.text}
                 style={styles.input}
               />
@@ -202,11 +203,12 @@ const styles = StyleSheet.create({
   post: {
     alignSelf: 'center',
     borderWidth: 1,
-    width: 275,
+    width: 325,
     borderRadius: 10,
     margin: 3,
     marginTop: 10,
-    backgroundColor: '#008080',
+    // backgroundColor: '#008080',
+    backgroundColor: 'darkgrey',
   },
   postText: {
     alignSelf: 'center',
@@ -220,7 +222,7 @@ const styles = StyleSheet.create({
     margin: 2,
     borderWidth: 1,
     borderRadius: 10,
-    width: 275,
+    width: 325,
     backgroundColor: 'grey',
   },
   commentName: {

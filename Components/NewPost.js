@@ -40,7 +40,7 @@ export default class NewPost extends Component {
                 flexDirection: 'column',
               }}
             >
-              <Text
+              {/* <Text
                 style={{
                   fontSize: 15,
                   fontWeight: 'bold',
@@ -50,10 +50,11 @@ export default class NewPost extends Component {
                 }}
               >
                 NEW POST
-              </Text>
+              </Text> */}
               <TextInput
                 onChangeText={text => this.setState({ text })}
                 placeholder="Type new post here!"
+                placeholderTextColor="grey"
                 value={this.state.text}
                 style={styles.input}
               />
@@ -90,7 +91,7 @@ export default class NewPost extends Component {
                     this.state.text,
                     this.state.private
                   );
-                  this.props.toggleMovePost()
+                  this.props.toggleMovePost();
                   this.props.toggleCreatePost();
                 }}
               >
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderWidth: 1,
     borderRadius: 10,
-    width: 275,
+    width: 325,
     backgroundColor: 'white',
     fontSize: 20,
     height: 40,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   button: {
     alignSelf: 'center',
     justifyContent: 'center',
-    width: 275,
+    width: 325,
     height: 35,
     backgroundColor: '#4169E1',
     borderRadius: 10,
