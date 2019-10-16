@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 25,
   },
   buttonText: {
-    fontSize: 15,
+    fontSize: 14,
     textAlign: 'center',
   },
   futherButton: {
