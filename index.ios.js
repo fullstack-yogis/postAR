@@ -39,13 +39,13 @@ const authLink = setContext(async (_, { headers }) => {
 const httpLink = createHttpLink({
   uri: URI,
   // uri: 'http://172.16.23.176:4000',
-  // uri: 'http://192.168.0.27:4000',
+  // uri: 'http://192.168.1.17:4000',
 });
 
 const wsLink = new WebSocketLink({
   uri: URI,
   // uri: `ws://172.16.23.176:4000`,
-  // uri: 'http://192.168.0.27:4000',
+  // uri: 'http://192.168.1.17:4000',
   options: {
     reconnect: true,
     connectionParams: {
