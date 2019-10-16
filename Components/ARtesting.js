@@ -295,11 +295,13 @@ class HelloWorldSceneAR extends Component {
 // export default withApollo(HelloWorldSceneAR);
 
 var styles = StyleSheet.create({
-  // viroFont: {
-  //   color: '#FFFFFF',
-  // },
+  viroFont: {
+    // color: '#FFFFFF',
+    width: 2
+  },
   comment: {
     fontSize: 10,
+    width: 2
   },
 });
 
@@ -318,16 +320,16 @@ var styles = StyleSheet.create({
 ViroMaterials.createMaterials({
   frontMaterial: {
     diffuseColor: 'white',
-    blendMode: 'Alpha',
+    blendMode: 'None',
   },
   backMaterial: {
     diffuseColor: 'red',
-    blendMode: 'Add',
+    blendMode: 'None',
   },
   //
   sideMaterial: {
-    diffuseColor: 'red',
-    blendMode: 'Add',
+    diffuseColor: 'blue',
+    blendMode: 'None',
   },
 });
 
