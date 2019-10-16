@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native';
 
 import {
   ViroARScene,
@@ -27,6 +27,7 @@ const FEED_QUERY = gql`
       xDistance
       yDistance
       zDistance
+      rotation
       comments {
         id
         text
@@ -38,42 +39,6 @@ const FEED_QUERY = gql`
           name
         }
       }
-    }
-  }
-`;
-
-//for mutating gql
-const POST_MUTATION = gql`
-  mutation PostMutation(
-    $description: String!
-    $privacy: Boolean!
-    $xDistance: Float!
-    $yDistance: Float!
-    $zDistance: Float!
-    $height: Float!
-    $width: Float!
-    $rotation: Float!
-  ) {
-    post(
-      description: $description
-      privacy: $privacy
-      xDistance: $xDistance
-      yDistance: $yDistance
-      zDistance: $zDistance
-      height: $height
-      width: $width
-      rotation: $rotation
-    ) {
-      id
-      createdAt
-      privacy
-      xDistance
-      yDistance
-      zDistance
-      description
-      height
-      width
-      rotation
     }
   }
 `;
@@ -91,6 +56,7 @@ const NEW_POSTS_SUBSCRIPTION = gql`
       description
       height
       width
+      rotation
       postPostedBy {
         id
       }
@@ -98,6 +64,7 @@ const NEW_POSTS_SUBSCRIPTION = gql`
         id
         text
         createdAt
+        # we already have postId from line 81, why query it again?
         post {
           id
         }
@@ -139,6 +106,7 @@ class HelloWorldSceneAR extends Component {
       // dragAble: true,
       allPosts: [],
       newPost: '', //description
+      clickTime: null,
     };
     this._onTap = this._onTap.bind(this);
     this._onDrag = this._onDrag.bind(this);
@@ -301,6 +269,7 @@ class HelloWorldSceneAR extends Component {
       console.log('pinAndSave error ' + e);
     }
     // }
+    // this.props.sceneNavigator.viroAppProps.updateAppState({ dragPos: d });
   }
 
   renderNewPost() {
@@ -313,75 +282,33 @@ class HelloWorldSceneAR extends Component {
           text={this.props.sceneNavigator.viroAppProps.newPostText}
           height={0.5}
           width={0.5}
-          rotation={[-90, 0, 0]}
+          rotation={this.props.sceneNavigator.viroAppProps.rotation}
           extrusionDepth={8}
           materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-          position={[0, 0.3, 0]}
-          visible={true}
-          dragType="FixedToWorld"
-          // onDrag={this.state.dragAble ? this._onDrag : null}
+          position={[0, 0, 0]}
           onDrag={this._onDrag}
-          onClick={this.pinAndSave}
+          // onClick={this.pinAndSave}
+          onClickState={stateValue => {
+            if (stateValue === 1) {
+              this.setState({ clickTime: Date.now() });
+            } else if (stateValue === 2) {
+              if (Date.now() - this.state.clickTime < 200) {
+                this.props.sceneNavigator.viroAppProps.updateAppState({
+                  rotation: [
+                    -90,
+                    0,
+                    this.props.sceneNavigator.viroAppProps.rotation[2] + 45,
+                  ],
+                });
+              }
+            }
+          }}
+          // dragType="FixedDistanceOrigin"
+          // onDrag={this.state.dragAble ? this._onDrag : null}
         />
       );
     }
   }
-
-  async createPost(post) {
-    try {
-      console.log('-------post', post)
-      const { data } = await client.mutate({
-        mutation: POST_MUTATION,
-        variables: post,
-      });
-      // console.log('data is ', data);
-      // this.setState({
-      //   allPosts: [...this.state.allPosts, data.post],
-      // });
-      return data.post;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  // distance(position1, position2) {
-  //   let sumSquares = 0;
-  //   for (let i = 0; i <= 2; i++) {
-  //     sumSquares += Math.abs((position1[i] - position2[i]) ** 2);
-  //   }
-  //   return Math.sqrt(sumSquares);
-  // }
-
-  // async distanceBetween(component) {
-  //   let xpos = component.xpos/10 + this.worldOriginRef[0];
-  //   let ypos = component.ypos/10 + this.worldOriginRef[1];
-  //   let zpos = component.zpos/10 + this.worldOriginRef[2];
-  //   let position2 = [xpos, ypos, zpos];
-  //   if (this.arSceneRef && position2) {
-  //     const position = await this.arSceneRef.getCameraOrientationAsync();
-  //     this.separation[component.itemId] = this.distance(
-  //       position.position,
-  //       position2
-  //     );
-  //   }
-  // }
-
-  async grabInitialPosition() {
-    const {position} = await this.mainScene.getCameraOrientationAsync();
-    console.log('-------initial position', position)
-    this.setState({initialUserPos: position})
-    // return position
-    // this.worldOriginRef = position
-  }
-
-    async grabPosition() {
-      const {position} = await this.mainScene.getCameraOrientationAsync();
-      console.log('-------position', position)
-      this.setState({finalUserPos: position})
-      // return position
-      // this.worldOriginRef = position
-    }
-
 
   render() {
     ViroARTrackingTargets.createTargets({
@@ -416,6 +343,7 @@ class HelloWorldSceneAR extends Component {
               // post.yDistance - 0.15,
               // post.zDistance + 1.6,
             ];
+            let rotation = [-90, 0, post.rotation];
             return (
               <ViroFlexView key={post.id}>
                 <ViroText
@@ -423,13 +351,14 @@ class HelloWorldSceneAR extends Component {
                   style={styles.viroFont}
                   extrusionDepth={8}
                   materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
-                  rotation={[-90, 0, 0]}
+                  rotation={rotation}
                   position={posnArray}
                   onClick={() => {
                     // console.log('clicking');
                     this.props.sceneNavigator.viroAppProps.toggleCreateComments(
                       post.id
                     );
+                    this.props.sceneNavigator.viroAppProps.toggleNmsg('');
                   }}
                 />
                 {post.comments.map((comment, idx) => {
@@ -441,12 +370,16 @@ class HelloWorldSceneAR extends Component {
 
                   return (
                     <ViroText
-                      text={(comment.user.name + ': ' + comment.text) || ''}
+                      text={comment.user.name + ': ' + comment.text || ''}
                       style={styles.comment}
                       extrusionDepth={8}
-                      materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
+                      materials={[
+                        'frontMaterial',
+                        'backMaterial',
+                        'sideMaterial',
+                      ]}
                       key={comment.id}
-                      rotation={[-90, 0, 0]}
+                      rotation={rotation}
                       position={commentPosnArray}
                     />
                   );
@@ -468,8 +401,8 @@ var styles = StyleSheet.create({
   //   color: '#FFFFFF',
   // },
   comment: {
-    fontSize: 10
-  }
+    fontSize: 10,
+  },
 });
 
 // ViroMaterials.createMaterials({
