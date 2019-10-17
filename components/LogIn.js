@@ -6,7 +6,6 @@ import {
   Text,
   TextInput,
   ImageBackground,
-  Button,
   TouchableOpacity,
   Image,
   AsyncStorage,
@@ -99,6 +98,7 @@ export default class Login extends Component {
                   // multiline={true}
                   style={styles.textInput}
                   placeholder="Name"
+                  placeholderTextColor="lightgray"
                   clearButtonMode="always"
                   onChangeText={name => this.setState({ name })}
                   value={this.state.name}
@@ -108,8 +108,9 @@ export default class Login extends Component {
                 // multiline={true}
                 style={styles.textInput}
                 placeholder="Email"
-                keyboardType="email-address"
+                placeholderTextColor="lightgray"
                 clearButtonMode="always"
+                keyboardType="email-address"
                 onChangeText={email => this.setState({ email })}
                 value={this.state.email}
               />
@@ -117,6 +118,7 @@ export default class Login extends Component {
                 // multiline={true}
                 style={styles.textInput}
                 placeholder="Password"
+                placeholderTextColor="lightgray"
                 secureTextEntry={true}
                 clearButtonMode="always"
                 onChangeText={password => this.setState({ password })}
@@ -209,10 +211,10 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     height: 50,
     width: 275,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: 'steelblue',
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: 'steelblue',
   },
   loginText: {
     fontSize: 18,
