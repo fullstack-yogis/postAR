@@ -239,7 +239,15 @@ class HelloWorldSceneAR extends Component {
             let posnArray = [post.xDistance, post.yDistance, post.zDistance];
             let rotation = [post.verRotation, 0, post.horRotation];
             return (
-              <ViroNode key={post.id}>
+              <ViroNode
+                key={post.id}
+                onClick={() => {
+                  this.props.sceneNavigator.viroAppProps.toggleCreateComments(
+                    post.id
+                  );
+                  this.props.sceneNavigator.viroAppProps.toggleNmsg('');
+                }}
+              >
                 <ViroText
                   text={post.description || ''}
                   style={styles.viroFont}
@@ -247,13 +255,6 @@ class HelloWorldSceneAR extends Component {
                   materials={['frontMaterial', 'backMaterial', 'sideMaterial']}
                   rotation={rotation}
                   position={posnArray}
-                  onClick={() => {
-                    // console.log('clicking');
-                    this.props.sceneNavigator.viroAppProps.toggleCreateComments(
-                      post.id
-                    );
-                    this.props.sceneNavigator.viroAppProps.toggleNmsg('');
-                  }}
                 />
                 {post.comments.map((comment, idx) => {
                   let commentPosnArray = [
