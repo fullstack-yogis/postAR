@@ -1,11 +1,18 @@
 # postAR - an Overview
 
-postAR is a way to transfer your 2D maps and notes to 3D Augmented Reality, pinned to accurate geolocation. This project is built in React-Native using the ViroAR library. The backend is built with GraphQL and Prisma Server. Please note our server code is in a [separate repository](https://github.com/fullstack-yogis/postAR-Server).
+postAR is a mobile application that allows users to create, share and comment on Argumented Reality post-it notes. With postAR, users can post public location information through pinning a 3D note to an accurate geolocation to guide visitors, share social messages at a venue for others to view and interact with one another in realtime, or simply create a private to-do list that will never get lost.
 
+# User Experience Walkthrough
 
 ![User Walkthrough](https://i.imgur.com/f6y62zN.jpg)
 
+For a more detailed overview of our project, please check out our video below:
 
+[![A youtube video](https://img.youtube.com/vi/BUOzXv-XcXI&list=PLx0iOsdUOUmlpYYeTgL0sVL08CydbhAS7&index=8/maxresdefault.jpg)](https://www.youtube.com/watch?v=BUOzXv-XcXI&list=PLx0iOsdUOUmlpYYeTgL0sVL08CydbhAS7&index=8)
+
+# Technology Stack
+
+This project is built in React-Native using the ViroAR library. The backend is built with GraphQL and Prisma Server. Please note our server code is in a [separate repository](https://github.com/fullstack-yogis/postAR-Server).
 
 This repository contains the front end source code, built using ViroReact, React Native, and Apollo Client for GraphQL. There is a separate git project deployed to Heroku which serves as the [backend server](https://github.com/fullstack-yogis/postAR-Server).
 
@@ -72,5 +79,3 @@ When the app prompts you to scan a marker, practice with our test marker:
 Functionality to create your own marker will be released in a future update.
 
 Have fun!
-
-
