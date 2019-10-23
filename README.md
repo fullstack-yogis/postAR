@@ -77,5 +77,5 @@ Have fun!
 
 |<img src='https://i.imgur.com/mTikvuk.jpg' width=200 height=200>| <img src='https://i.imgur.com/GKrKYyt.jpg' width=200 height=200>| <img src='https://i.imgur.com/nSi4ZqS.jpg' width=200 height=200>| <img src='https://i.imgur.com/FY6Rn4r.jpg' width=200 height=200>|
 |----------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------|
-|[LinkedIn](linkedin.com/in/qionghelenzhang)|[LinkedIn](linkedin.com/in/jesse-brian-shapiro)|[LinkedIn](linkedin.com/in/rushilshakya)|[LinkedIn](linkedin.com/in/wongtonyb)
+|[LinkedIn](https://linkedin.com/in/qionghelenzhang)|[LinkedIn](https://linkedin.com/in/jesse-brian-shapiro)|[LinkedIn](https://linkedin.com/in/rushilshakya)|[LinkedIn](https://linkedin.com/in/wongtonyb)
 |[Github](github.com/helenqiongzhang)|[Github](github.com/jesse-shapiro)|[Github](github.com/rushilshakya)|[Github](github.com/wongtonyb)|
