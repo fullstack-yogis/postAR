@@ -67,10 +67,15 @@ That's it! you should be up and running, as long as the [backend server](https:/
 
 When the app prompts you to scan a marker, practice with our test marker:
 
-![User Walkthrough](https://i.imgur.com/rBqbbvs.jpg)
+<p align="center">
+  <img src='https://i.imgur.com/rBqbbvs.jpg' width=500 height=500>
+ </p>
 
 Functionality to create your own marker will be released in a future update.
 
 Have fun!
 
-
+|<img src='https://i.imgur.com/mTikvuk.jpg' width=200 height=200>| <img src='https://i.imgur.com/GKrKYyt.jpg' width=200 height=200>| <img src='https://i.imgur.com/nSi4ZqS.jpg' width=200 height=200>| <img src='https://i.imgur.com/FY6Rn4r.jpg' width=200 height=200>|
+|----------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------|
+|[LinkedIn](linkedin.com/in/qionghelenzhang)|[LinkedIn](linkedin.com/in/jesse-brian-shapiro)|[LinkedIn](linkedin.com/in/rushilshakya)|[LinkedIn](linkedin.com/in/wongtonyb)
+|[Github](github.com/helenqiongzhang)|[Github](github.com/jesse-shapiro)|[Github](github.com/rushilshakya)|[Github](github.com/wongtonyb)|
