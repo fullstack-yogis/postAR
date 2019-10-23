@@ -8,7 +8,7 @@ postAR is a mobile application that allows users to create, share and comment on
 
 For a more detailed overview of our project, please check out our video below:
 
-[![A youtube video](https://img.youtube.com/vi/BUOzXv-XcXI&list=PLx0iOsdUOUmlpYYeTgL0sVL08CydbhAS7&index=8/maxresdefault.jpg)](https://www.youtube.com/watch?v=BUOzXv-XcXI&list=PLx0iOsdUOUmlpYYeTgL0sVL08CydbhAS7&index=8)
+[https://www.youtube.com/watch?v=BUOzXv-XcXI&list=PLx0iOsdUOUmlpYYeTgL0sVL08CydbhAS7&index=8](https://www.youtube.com/watch?v=BUOzXv-XcXI&list=PLx0iOsdUOUmlpYYeTgL0sVL08CydbhAS7&index=8)
 
 # Technology Stack
 
