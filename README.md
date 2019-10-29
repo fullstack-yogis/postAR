@@ -1,6 +1,6 @@
 # postAR - an Overview
 
-postAR is a mobile application that allows users to create, share and comment on Argumented Reality post-it notes. With postAR, users can post public location information through pinning a 3D note to an accurate geolocation to guide visitors, share social messages at a venue for others to view and interact with one another in realtime, or simply create a private to-do list that will never get lost.
+postAR is a mobile application that allows users to create, share and comment on Augmented Reality post-it notes. With postAR, users can post public location information through pinning a 3D note to an accurate geolocation to guide visitors, share social messages at a venue for others to view and interact with one another in realtime, or simply create a private to-do list that will never get lost.
 
 # User Experience Walkthrough
 
